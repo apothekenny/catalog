@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Apothekenny — Natural Health Catalog</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-900: #04342C;
+    --green-800: #085041;
+    --green-700: #0F6E56;
+    --green-600: #1D9E75;
+    --green-100: #9FE1CB;
+    --green-50:  #E1F5EE;
+    --amber-700: #854F0B;
+    --amber-600: #BA7517;
+    --amber-50:  #FAEEDA;
+    --gray-900:  #2C2C2A;
+    --gray-600:  #5F5E5A;
+    --gray-300:  #D3D1C7;
+    --gray-100:  #F1EFE8;
+    --white:     #FFFFFF;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+  }
+
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .site-header {
+    background: var(--green-800);
+    padding: 2rem 1.5rem 1.5rem;
+    text-align: center;
+  }
+
+
+
+  .site-logo {
+    max-width: 320px;
+    width: 80%;
+    height: auto;
+    margin: 0 auto 8px;
+    display: block;
+  }
+  .site-header .tagline {
+    font-size: 14px;
+    color: var(--green-100);
+    margin-top: 8px;
+    font-style: italic;
+  }
+  .header-contact {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .wa-btn-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+    padding: 9px 18px;
+    border-radius: 50px;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .wa-btn-header svg { width: 16px; height: 16px; fill: #fff; flex-shrink: 0; }
+  .email-btn-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: transparent;
+    color: var(--green-100);
+    text-decoration: none;
+    padding: 9px 18px;
+    border-radius: 50px;
+    border: 1px solid var(--green-600);
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+  }
+
+  /* SEARCH + FILTERS */
+  .controls {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-300);
+    padding: 14px 1.25rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .search-wrap {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 10px;
+  }
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px; height: 16px;
+    fill: none;
+    stroke: var(--gray-600);
+    stroke-width: 2;
+  }
+  #search {
+    width: 100%;
+    padding: 10px 12px 10px 38px;
+    border: 1px solid var(--gray-300);
+    border-radius: 50px;
+    font-size: 14px;
+    font-family: -apple-system, sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    outline: none;
+  }
+  #search:focus { border-color: var(--green-600); background: var(--white); }
+
+  .filter-row {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 2px;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-600);
+    border-radius: 50px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-family: -apple-system, sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--green-600); color: var(--green-700); }
+  .filter-btn.active {
+    background: var(--green-700);
+    color: var(--white);
+    border-color: var(--green-700);
+  }
+
+  /* RESULTS BAR */
+  .results-bar {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 1.25rem 4px;
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: var(--gray-600);
+  }
+
+  /* CATALOG GRID */
+  .catalog {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .section-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 0 6px;
+    border-bottom: 1px solid var(--gray-300);
+    margin-bottom: 4px;
+  }
+  .section-header h2 {
+    font-size: 15px;
+    font-weight: normal;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green-800);
+  }
+  .section-count {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    color: var(--gray-600);
+    background: var(--gray-100);
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--gray-300);
+  }
+
+  .product-card {
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: box-shadow 0.15s;
+  }
+  .product-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+
+  .card-top {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .product-thumb {
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-md);
+    background: var(--green-50);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .product-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+  .product-thumb .cat-icon {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .product-meta { flex: 1; min-width: 0; }
+  .product-name {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--gray-900);
+    line-height: 1.3;
+    font-family: Georgia, serif;
+  }
+  .product-brand {
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    color: var(--gray-600);
+    margin-top: 2px;
+  }
+  .product-desc {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 6px;
+    border-top: 1px solid var(--gray-100);
+  }
+  .product-price {
+    font-family: -apple-system, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green-700);
+  }
+  .product-price.ask {
+    font-size: 12px;
+    font-weight: normal;
+    color: var(--gray-600);
+  }
+  .badge {
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+  }
+  .badge-urgent {
+    background: var(--amber-50);
+    color: var(--amber-700);
+    border: 1px solid #FAC775;
+  }
+  .badge-cat {
+    background: var(--green-50);
+    color: var(--green-800);
+    border: 1px solid var(--green-100);
+  }
+  .order-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--green-50);
+    color: var(--green-800);
+    border: 1px solid var(--green-100);
+    border-radius: 50px;
+    padding: 4px 10px;
+    font-family: -apple-system, sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .order-btn:hover { background: var(--green-100); }
+
+  /* ORDER SECTION */
+  .order-section {
+    background: var(--green-800);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+  .order-section h2 {
+    font-size: 24px;
+    font-weight: normal;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .order-section p {
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    color: var(--green-100);
+    max-width: 480px;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+  }
+  .order-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  @media (max-width: 560px) { .order-grid { grid-template-columns: 1fr; } }
+
+  .order-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    text-align: left;
+  }
+  .order-card h3 {
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green-100);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .wa-order-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #25D366;
+    color: #fff;
+    text-decoration: none;
+    padding: 11px 16px;
+    border-radius: 50px;
+    font-family: -apple-system, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .wa-order-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+
+  .contact-form { display: flex; flex-direction: column; gap: 8px; }
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.08);
+    color: var(--white);
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    outline: none;
+  }
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder { color: rgba(255,255,255,0.4); }
+  .contact-form input:focus,
+  .contact-form textarea:focus { border-color: var(--green-100); }
+  .contact-form textarea { min-height: 80px; resize: vertical; }
+  .submit-btn {
+    background: var(--white);
+    color: var(--green-800);
+    border: none;
+    border-radius: 50px;
+    padding: 10px;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+  }
+  .submit-btn:hover { background: var(--green-50); }
+  #form-msg {
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: var(--green-100);
+    text-align: center;
+    min-height: 18px;
+  }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--green-900);
+    padding: 1.5rem;
+    text-align: center;
+    font-family: -apple-system, sans-serif;
+    font-size: 12px;
+    color: var(--green-100);
+    line-height: 1.8;
+  }
+  .site-footer a { color: var(--green-100); }
+
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem 1rem;
+    font-family: -apple-system, sans-serif;
+    color: var(--gray-600);
+  }
+  .no-results p { margin-top: 8px; font-size: 14px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCADIAyADASIAAhEBAxEB/8QAHAABAAMBAQEBAQAAAAAAAAAAAAUGBwQDAgEI/8QAVRAAAQMDAQQFBwcJAwgIBwAAAQACAwQFEQYHEiExE0FRYYEUIjJxkaGxFUJyc7LB0RYjMzQ1NlJVYiSSowhTVHSCk+HwFyY3Q4OUotJEZISzwsPx/8QAGgEBAAMBAQEAAAAAAAAAAAAAAAECBQQDBv/EADIRAAICAQMCBAMIAgMBAAAAAAABAgMRBCExEkEFE1FxYYGRFCIyM6Gx0fBSwSM04fH/2gAMAwEAAhEDEQA/AP4yREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAERX7UGzm4t01Raq0/G+vtVRSsmla3jLTux54I62gg8R4rxtvrqaU3jPB610TtTcFnHJwWDRVTV6Kumr64vht9IzEDQPOqJCQ3h2NBPE+CqC1C9avml2LWLTFJRubLVSvhkc3jvtjeCAB2uc4exVjVOhrzpiyUlxvhgpJKt5bDSF+ZsAZLiBwAGR19a5tPqJdUvOeG5NRXwX9Z030R6V5SylFOT+LKsiIu84QiIgCIiA/QCSABknku6ez3SCm8ploZ2RYzvFvL19ilNnlNFUahBlYH9FE57QeW9kAH3rUDE1zC0gEHnlSkZur17osUEjDEVw1rpg0jn19BHmAnMkbfmd47lT1B203Ruj1RCIiHqEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAFrWx3aT+R1KbJqKmqXWyb89TPazLot7nwPpMPPh15WSrYdjFXpnVFq/IvVtNTyyQuL7dM924/BOXRtfzBzxA68lZ3ikYPTvzI9Ue+OV8V7Gh4a5q9eXLpl2zw/gyfsLtEOvlFqWjudP8jW6vq5iJmlgp3zMa6MYP8AU1+MKo6nluG17aU2nskcjbfTtETJpAd2KIHzpHdmTyHM8Far7svdY5qy12p89TaL5A6MdKMupamPMkRJHNpILc/1LqpL1adlGzKkp4443ahroRO+A+n0rhzf2NbnAHXhY0LYJqzTtzm9o57J7tv55NeVU2nXelCC3lju1hJL5YMe2m0FttWtK61WlhbTUW5Bkni97WAO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qa6UPwd4vBaGkHePAYXP9lspr09ajnoeXj2a/dnR9prusvsbx1rCz7p/6PnRGnap+kprpa661MudcX0zXVFdHC6mh5PIDjnffxbnqbn+LhcdN6QuVPshv9kdVWt9TVVLXsfHXRuiAG56TwcNPmnge5YaMZ48lols1ppe36TqdKRWO4zW+t3n1U76pgmMnm7rmgN3QBujgU1+l1L3recyT44SfrlcencaHU6dbTWMRa55yvbv69ijXq3T2m6VFuqXwvlgfuudDIJGE4zwcOBXGvWs8n8qk8l6XoN49H0mN7HVnHDK8ltQz0rPJjyx1PHAREVioREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAf//Z" alt="Apothekenny — Salud natural desde 2014" class="site-logo" />
+  <div class="header-contact">
+    <a class="wa-btn-header" href="https://wa.me/593988060335" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp Us
+    </a>
+    <a class="email-btn-header" href="mailto:ask@apothekenny.com">ask@apothekenny.com</a>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search" placeholder="Search by name, herb, brand..." oninput="filterProducts()" autocomplete="off" />
+  </div>
+  <div class="filter-row" id="filter-row"></div>
+</div>
+
+<div class="results-bar" id="results-bar"></div>
+<div class="catalog" id="catalog"></div>
+
+<section class="order-section">
+  <h2>Ready to order?</h2>
+  <p>Local delivery available in Cuenca · Shipping available across Ecuador. Message us on WhatsApp with your list and we'll confirm availability and arrange delivery or pickup.</p>
+  <div class="order-grid">
+    <div class="order-card">
+      <h3>Quick order via WhatsApp</h3>
+      <a class="wa-order-btn" href="https://wa.me/593988060335" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Message on WhatsApp
+      </a>
+      <p style="font-family:-apple-system,sans-serif;font-size:12px;color:rgba(255,255,255,0.5);text-align:center;">+593 98 806 0335</p>
+    </div>
+    <div class="order-card">
+      <h3>Send an order request</h3>
+      <div class="contact-form">
+        <input type="text" id="cf-name" placeholder="Your name" />
+        <input type="text" id="cf-contact" placeholder="Your WhatsApp or email" />
+        <textarea id="cf-order" placeholder="Items you'd like — e.g. 2x Almond Butter, Tea Tree Oil..."></textarea>
+        <button class="submit-btn" onclick="submitForm()">Send via WhatsApp ↗</button>
+        <p id="form-msg"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <p><strong>Apothekenny</strong> &nbsp;·&nbsp; Yunguilla Valley &amp; Cuenca, Ecuador</p>
+  <p>WhatsApp: +593 98 806 0335 &nbsp;·&nbsp; <a href="mailto:ask@apothekenny.com">ask@apothekenny.com</a></p>
+  <p style="margin-top:6px;color:rgba(255,255,255,0.35);">Salud natural desde 2014</p>
+</footer>
+
+<script>
+const CAT_ICONS = {
+  "Food":"🌾","Spices":"🧂","Tea & Herbs":"🌿","Essential Oils":"💧",
+  "Personal Care":"✨","Tinctures":"🧪","Supplements":"🌱","Household":"🏠","Gifts":"🎁"
+};
+
+const PRODUCTS = [{"id": 148, "name": "DE Feedgrade", "cat": "Household", "brand": "Tienda Nectar", "price": 6.0, "qty": 2, "desc": "Diatomaceous earth, feed grade.", "img": ""}, {"id": 69, "name": "Detergente Líquido (5gal)", "cat": "Household", "brand": "Terra", "price": 2.3, "qty": 1, "desc": "Liquid laundry detergent, 5 gallon.", "img": ""}, {"id": 11, "name": "Detergente Líquido (1gal)", "cat": "Household", "brand": "Terra", "price": 12.0, "qty": 1, "desc": "Liquid laundry detergent, 1 gallon.", "img": ""}, {"id": 9, "name": "Suavizante de Ropa (1gal)", "cat": "Household", "brand": "Terra", "price": 12.5, "qty": 1, "desc": "Fabric softener, 1 gallon.", "img": ""}, {"id": 10, "name": "Suavizante de Ropa (2L)", "cat": "Household", "brand": "Terra", "price": 7.25, "qty": 1, "desc": "Fabric softener, 2 liters.", "img": ""}, {"id": 365, "name": "Essential Oil Kit (5 piece)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 28.0, "qty": 1, "desc": "Five-piece essential oil kit: Pine, Laurel, Mint, Geranium, Cinnamon.", "img": ""}, {"id": 391, "name": "Albahaca", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 1, "desc": "Basil essential oil, 5ml.", "img": ""}, {"id": 394, "name": "Árbol de Té (15ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 21.0, "qty": 2, "desc": "Tea tree essential oil, 15ml.", "img": ""}, {"id": 396, "name": "Benjuí", "cat": "Essential Oils", "brand": "iSabru", "price": 9.0, "qty": 3, "desc": "Benzoin essential oil, 5ml.", "img": ""}, {"id": 395, "name": "Bergamot", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 3, "desc": "Bergamot essential oil, 5ml.", "img": ""}, {"id": 397, "name": "Café (EO)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 2, "desc": "Coffee essential oil, 5ml.", "img": ""}, {"id": 366, "name": "Caléndula (EO)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 10.0, "qty": 2, "desc": "Calendula essential oil, 5ml.", "img": ""}, {"id": 392, "name": "Camfor / Alcanforero", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.5, "qty": 6, "desc": "Camphor essential oil, 5ml. Cooling oil for respiratory comfort. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1GKflr_n8hAA4QlSm7AP0Yho2V0EC8P6u&sz=w400"}, {"id": 398, "name": "Canela (Chakra)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 7.25, "qty": 2, "desc": "Cinnamon essential oil, 5ml.", "img": ""}, {"id": 575, "name": "Canela (Isabru)", "cat": "Essential Oils", "brand": "Isabru", "price": 19.0, "qty": 1, "desc": "Cinnamon essential oil, 5ml. Premium.", "img": ""}, {"id": 399, "name": "Casia", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.5, "qty": 5, "desc": "Cassia essential oil, 5ml. Warm spicy oil. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1wURiRsC1KVJt-wTaxyO1jKrNYnpKZxA8&sz=w400"}, {"id": 400, "name": "Cedro", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.5, "qty": 7, "desc": "Cedarwood essential oil, 5ml. Grounding woody oil. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1uTYtUm9BGB_dd8EIA84Urz9_Vz6nrkP9&sz=w400"}, {"id": 401, "name": "Ciprés (Green Harmony)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 4, "desc": "Cypress essential oil, 5ml.", "img": ""}, {"id": 450, "name": "Ciprés (Chakra)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 9.0, "qty": 2, "desc": "Cypress essential oil, 5ml.", "img": ""}, {"id": 402, "name": "Citronella (5ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.5, "qty": 3, "desc": "Citronella essential oil, 5ml.", "img": ""}, {"id": 403, "name": "Citronella (10ml)", "cat": "Essential Oils", "brand": "iSabru", "price": 13.5, "qty": 1, "desc": "Citronella essential oil, 10ml.", "img": ""}, {"id": 572, "name": "Clavo de Olor", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 7.0, "qty": 3, "desc": "Clove essential oil, 5ml.", "img": ""}, {"id": 404, "name": "Cúrcuma (EO)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.0, "qty": 1, "desc": "Turmeric essential oil, 5ml.", "img": ""}, {"id": 405, "name": "Enebro (5ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 1, "desc": "Juniper essential oil, 5ml.", "img": ""}, {"id": 406, "name": "Enebro (premium)", "cat": "Essential Oils", "brand": "iSabru", "price": 15.0, "qty": 1, "desc": "Juniper essential oil, 5ml. Premium.", "img": ""}, {"id": 407, "name": "Eucalipto", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 5, "desc": "Eucalyptus essential oil, 5ml. For respiratory comfort. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1UTkgM_X0sD2j6O_YM_VtTbJBAwKa6jlb&sz=w400"}, {"id": 415, "name": "Fenugreek (EO)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 14.75, "qty": 4, "desc": "Fenugreek essential oil, 10ml.", "img": ""}, {"id": 408, "name": "Gaulteria", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 3, "desc": "Wintergreen essential oil, 5ml.", "img": ""}, {"id": 409, "name": "Geranio (5ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 2, "desc": "Geranium essential oil, 5ml.", "img": ""}, {"id": 573, "name": "Geranio (10ml)", "cat": "Essential Oils", "brand": "Killanaya", "price": 6.5, "qty": 2, "desc": "Geranium essential oil, 10ml.", "img": ""}, {"id": 410, "name": "Hierba Buena", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 1, "desc": "Spearmint essential oil, 9ml.", "img": ""}, {"id": 412, "name": "Hierba Luisa (10ml)", "cat": "Essential Oils", "brand": "iSabru", "price": 8.0, "qty": 2, "desc": "Lemon verbena essential oil, 10ml.", "img": ""}, {"id": 411, "name": "Hierba Luisa (5ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 15.0, "qty": 1, "desc": "Lemon verbena essential oil, 5ml.", "img": ""}, {"id": 413, "name": "Incienso", "cat": "Essential Oils", "brand": "Green Harmony", "price": 11.0, "qty": 4, "desc": "Frankincense essential oil, 5ml.", "img": ""}, {"id": 414, "name": "Jazmín", "cat": "Essential Oils", "brand": "Green Harmony", "price": 19.0, "qty": 1, "desc": "Jasmine essential oil, 5ml.", "img": ""}, {"id": 416, "name": "Jengibre (5ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 19.0, "qty": 2, "desc": "Ginger essential oil, 5ml.", "img": ""}, {"id": 417, "name": "Jengibre (10ml)", "cat": "Essential Oils", "brand": "iSabru", "price": 15.0, "qty": 1, "desc": "Ginger essential oil, 10ml.", "img": ""}, {"id": 418, "name": "Laurel", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.5, "qty": 3, "desc": "Bay laurel essential oil, 5ml.", "img": ""}, {"id": 421, "name": "Lavanda", "cat": "Essential Oils", "brand": "Green Harmony", "price": 21.0, "qty": 2, "desc": "Lavender essential oil, 15ml.", "img": ""}, {"id": 422, "name": "Lima", "cat": "Essential Oils", "brand": "Green Harmony", "price": 6.5, "qty": 7, "desc": "Lime essential oil, 5ml. Fresh citrus, uplifting. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1D_z4BfEeRZ2gHr0C6RQwDT7J7fb7nOZa&sz=w400"}, {"id": 423, "name": "Limón", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.0, "qty": 2, "desc": "Lemon essential oil, 5ml.", "img": ""}, {"id": 430, "name": "Mandarina", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.0, "qty": 2, "desc": "Mandarin essential oil, 5ml.", "img": ""}, {"id": 424, "name": "Manzanilla", "cat": "Essential Oils", "brand": "iSabru", "price": 25.0, "qty": 1, "desc": "Chamomile essential oil, 2ml. Premium.", "img": ""}, {"id": 425, "name": "Menta", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.0, "qty": 2, "desc": "Peppermint essential oil, 5ml.", "img": ""}, {"id": 426, "name": "Mirra", "cat": "Essential Oils", "brand": "Green Harmony", "price": 17.5, "qty": 1, "desc": "Myrrh essential oil, 5ml.", "img": ""}, {"id": 428, "name": "Naranja", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 8.0, "qty": 1, "desc": "Orange essential oil, 5ml.", "img": ""}, {"id": 427, "name": "Naranja Dulce", "cat": "Essential Oils", "brand": "Green Harmony", "price": 6.5, "qty": 1, "desc": "Sweet orange essential oil, 5ml.", "img": ""}, {"id": 429, "name": "Neroli", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 1, "desc": "Neroli essential oil, 5ml.", "img": ""}, {"id": 431, "name": "Orégano (EO)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.5, "qty": 2, "desc": "Oregano essential oil, 5ml.", "img": ""}, {"id": 432, "name": "Palmarosa", "cat": "Essential Oils", "brand": "Green Harmony", "price": 12.0, "qty": 1, "desc": "Palmarosa essential oil, 5ml.", "img": ""}, {"id": 433, "name": "Palo Santo", "cat": "Essential Oils", "brand": "Tienda Nectar", "price": 5.0, "qty": 2, "desc": "Palo santo essential oil. Sacred wood, grounding aroma.", "img": ""}, {"id": 434, "name": "Patchouli", "cat": "Essential Oils", "brand": "Green Harmony", "price": 8.0, "qty": 2, "desc": "Patchouli essential oil, 5ml.", "img": ""}, {"id": 419, "name": "Patchouli Supreme", "cat": "Essential Oils", "brand": "Plant Prana", "price": 15.0, "qty": 1, "desc": "Patchouli supreme essential oil, 5ml.", "img": ""}, {"id": 435, "name": "Pimienta Negra (EO)", "cat": "Essential Oils", "brand": "iSabru", "price": 11.0, "qty": 2, "desc": "Black pepper essential oil, 5ml.", "img": ""}, {"id": 436, "name": "Pino", "cat": "Essential Oils", "brand": "Green Harmony", "price": 5.0, "qty": 2, "desc": "Pine essential oil, 5ml.", "img": ""}, {"id": 437, "name": "Romero (Chakra)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 6.75, "qty": 1, "desc": "Rosemary essential oil, 5ml.", "img": ""}, {"id": 438, "name": "Romero (Green Harmony)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.0, "qty": 1, "desc": "Rosemary essential oil, 5ml.", "img": ""}, {"id": 439, "name": "Rosa de Mai", "cat": "Essential Oils", "brand": "Green Harmony", "price": 16.0, "qty": 1, "desc": "May rose essential oil, 5ml.", "img": ""}, {"id": 440, "name": "Salvia", "cat": "Essential Oils", "brand": "Green Harmony", "price": 11.0, "qty": 2, "desc": "Sage essential oil, 5ml.", "img": ""}, {"id": 441, "name": "Sándalo", "cat": "Essential Oils", "brand": "Green Harmony", "price": 12.0, "qty": 1, "desc": "Sandalwood essential oil, 5ml.", "img": ""}, {"id": 449, "name": "Set de 3 Aceites", "cat": "Essential Oils", "brand": "Green Harmony", "price": 15.0, "qty": 1, "desc": "Essential oil set of 3: Pine, Cinnamon, Sweet Orange.", "img": ""}, {"id": 442, "name": "Té Verde (EO)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 6.25, "qty": 2, "desc": "Green tea essential oil, 5ml.", "img": ""}, {"id": 393, "name": "Tea Tree Oil", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 12, "desc": "Tea tree essential oil, 5ml. Antimicrobial and purifying. For external use; dilute before applying.", "img": "https://drive.google.com/thumbnail?id=1AYrbVPjCg_TuHWDBhWj8vQ1Gius-RPK3&sz=w400"}, {"id": 420, "name": "Three Wise Men", "cat": "Essential Oils", "brand": "Plant Prana", "price": 11.0, "qty": 1, "desc": "Three Wise Men essential oil blend, 5ml.", "img": ""}, {"id": 443, "name": "Toronja (10ml)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 15.0, "qty": 1, "desc": "Grapefruit essential oil, 10ml.", "img": ""}, {"id": 444, "name": "Toronja (5ml)", "cat": "Essential Oils", "brand": "Chakra Seeds", "price": 7.0, "qty": 1, "desc": "Grapefruit essential oil, 5ml.", "img": ""}, {"id": 576, "name": "Toronja (Isabru)", "cat": "Essential Oils", "brand": "Isabru", "price": 13.0, "qty": 1, "desc": "Grapefruit essential oil, 10ml.", "img": ""}, {"id": 445, "name": "Toronjil", "cat": "Essential Oils", "brand": "Green Harmony", "price": 7.5, "qty": 2, "desc": "Lemon balm essential oil, 5ml.", "img": ""}, {"id": 446, "name": "Vainilla (EO)", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 2, "desc": "Vanilla essential oil, 5ml.", "img": ""}, {"id": 447, "name": "Vetiver", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 2, "desc": "Vetiver essential oil, 5ml.", "img": ""}, {"id": 448, "name": "Ylang Ylang", "cat": "Essential Oils", "brand": "Green Harmony", "price": 9.0, "qty": 2, "desc": "Ylang ylang essential oil, 5ml.", "img": ""}, {"id": 574, "name": "Ylang-Ylang (Isabru)", "cat": "Essential Oils", "brand": "Isabru", "price": 14.0, "qty": 1, "desc": "Ylang ylang essential oil, 5ml. Premium.", "img": ""}, {"id": 586, "name": "Almond Butter", "cat": "Food", "brand": "Tienda Nectar", "price": 12.25, "qty": 34, "desc": "Almond butter, 454g. Rich in healthy fats, vitamin E, and plant-based protein.", "img": "https://lexiscleankitchen.com/wp-content/uploads/2020/07/How-to-Make-Almond-Butter-15-500x500.jpg"}, {"id": 585, "name": "Cashew Butter", "cat": "Food", "brand": "Tienda Nectar", "price": 12.25, "qty": 50, "desc": "Cashew butter, 454g. High in healthy fats and plant-based protein.", "img": "https://www.kudoskitchenbyrenee.com/wp-content/uploads/2025/04/Cashew-and-Honey-Nut-Butter-800-x-1200.jpg"}, {"id": 580, "name": "Bliss Butter", "cat": "Food", "brand": "Indunil", "price": 10.0, "qty": 5, "desc": "Bliss butter — ask for details.", "img": ""}, {"id": 84, "name": "Bee Pollen", "cat": "Food", "brand": "Api Loja", "price": 4.5, "qty": 12, "desc": "Bee pollen, 4oz jar. Nutrient-dense superfood.", "img": ""}, {"id": 267, "name": "Aceite de Oliva EV (500ml)", "cat": "Food", "brand": "Guadlay", "price": 9.75, "qty": 11, "desc": "Organic extra virgin olive oil, 500ml. Cold-pressed.", "img": ""}, {"id": 268, "name": "Aceite de Oliva EV (1L)", "cat": "Food", "brand": "Guadlay", "price": 18.0, "qty": 8, "desc": "Organic extra virgin olive oil, 1L. Cold-pressed.", "img": ""}, {"id": 176, "name": "Mishky de Penco Azul", "cat": "Food", "brand": "Apu", "price": 8.5, "qty": 8, "desc": "Fermented agave beverage, 300ml. Rich in natural probiotics.", "img": ""}, {"id": 239, "name": "Baking Soda", "cat": "Food", "brand": "Tienda Nectar", "price": 3.75, "qty": 7, "desc": "Baking soda, 454g. For cooking, cleaning, and personal care.", "img": ""}, {"id": 256, "name": "Cebada", "cat": "Food", "brand": "Schullo", "price": 2.55, "qty": 7, "desc": "Organic barley, 300g. Whole grain.", "img": ""}, {"id": 278, "name": "Vinagre de Manzana", "cat": "Food", "brand": "Rioja Vina", "price": 5.0, "qty": 7, "desc": "Apple cider vinegar, 500ml. Naturally fermented.", "img": ""}, {"id": 177, "name": "Miel de Abejas", "cat": "Food", "brand": "Api Loja", "price": 8.0, "qty": 6, "desc": "Raw honey, 700g jar.", "img": ""}, {"id": 242, "name": "Almond Flour", "cat": "Food", "brand": "Tienda Nectar", "price": 5.0, "qty": 6, "desc": "Almond flour, 300g. Gluten-free.", "img": ""}, {"id": 258, "name": "Soya", "cat": "Food", "brand": "Schullo", "price": 2.93, "qty": 6, "desc": "Soy, 300g. Plant-based protein source.", "img": ""}, {"id": 103, "name": "Sauerkraut", "cat": "Food", "brand": "Tienda Nectar", "price": 7.25, "qty": 6, "desc": "Homemade sauerkraut, 500g jar. Naturally fermented.", "img": ""}, {"id": 87, "name": "Organic Rice (1kg)", "cat": "Food", "brand": "Tienda Nectar", "price": 3.0, "qty": 5, "desc": "Organic rice, 1kg.", "img": ""}, {"id": 237, "name": "Pasta de Cacao (227g)", "cat": "Food", "brand": "Arawi", "price": 5.9, "qty": 5, "desc": "Cacao paste, 227g. Pure minimally processed cacao.", "img": "https://drive.google.com/thumbnail?id=1z5j3gngcK_2ZmCs9dEjw13nCMCSEeLeb&sz=w400"}, {"id": 280, "name": "Aceite de Sésamo", "cat": "Food", "brand": "Chakra Seeds", "price": 8.75, "qty": 5, "desc": "Sesame oil, 250ml. Nutrient-rich for cooking or skincare.", "img": "https://drive.google.com/thumbnail?id=1E_33YpoNiK_myhqaHST87Eeck4csvBrM&sz=w400"}, {"id": 287, "name": "Aceite de Coco (500ml)", "cat": "Food", "brand": "Cosecha de Lu", "price": 15.0, "qty": 5, "desc": "Coconut oil, 500ml. For cooking, baking, or body care.", "img": "https://drive.google.com/thumbnail?id=1xK9kZNXqQhd1yZIdbzAXavUkvKmrHz02&sz=w400"}, {"id": 571, "name": "Honey (Forest Foods)", "cat": "Food", "brand": "Forest Foods", "price": 9.0, "qty": 5, "desc": "Raw farm honey. Rich in natural enzymes.", "img": ""}, {"id": 187, "name": "Nutritional Yeast", "cat": "Food", "brand": "Tienda Nectar", "price": 8.25, "qty": 5, "desc": "Nutritional yeast (bulk). Rich in B vitamins and protein.", "img": ""}, {"id": 88, "name": "Organic Rice (2kg)", "cat": "Food", "brand": "Tienda Nectar", "price": 5.25, "qty": 4, "desc": "Organic rice, 2kg.", "img": ""}, {"id": 225, "name": "Steel Cut Oats", "cat": "Food", "brand": "Schullo", "price": 6.25, "qty": 4, "desc": "Organic steel cut oats, 650g.", "img": ""}, {"id": 226, "name": "Germen de Trigo", "cat": "Food", "brand": "Schullo", "price": 2.25, "qty": 4, "desc": "Wheat germ, 350g.", "img": ""}, {"id": 229, "name": "Cognitive+Café", "cat": "Food", "brand": "CoOp Made", "price": 15.0, "qty": 4, "desc": "Functional coffee blend, 450g.", "img": ""}, {"id": 235, "name": "Manteca de Cacao (454g)", "cat": "Food", "brand": "Arawi", "price": 19.5, "qty": 4, "desc": "Cacao butter, 454g.", "img": ""}, {"id": 250, "name": "Almonds", "cat": "Food", "brand": "Tienda Nectar", "price": 5.75, "qty": 4, "desc": "Whole almonds, 454g.", "img": ""}, {"id": 254, "name": "Pumpkin Seeds", "cat": "Food", "brand": "Tienda Nectar", "price": 1.0, "qty": 4, "desc": "Pumpkin seeds.", "img": ""}, {"id": 265, "name": "Rye / Centeno", "cat": "Food", "brand": "Schullo", "price": 4.18, "qty": 9, "desc": "Organic rye, 300g. Whole grain rich in fiber.", "img": ""}, {"id": 269, "name": "Aceite Sacha Inchi", "cat": "Food", "brand": "Scorpii", "price": 12.0, "qty": 3, "desc": "Sacha inchi oil, 300ml.", "img": ""}, {"id": 279, "name": "Aceite de Linaza", "cat": "Food", "brand": "Karay", "price": 6.0, "qty": 3, "desc": "Flaxseed oil, 250ml. Rich in omega-3.", "img": ""}, {"id": 104, "name": "Organic Tomato Sauce", "cat": "Food", "brand": "Franco Organico", "price": 6.0, "qty": 3, "desc": "Organic tomato sauce, 500g jar.", "img": ""}, {"id": 178, "name": "Algarrobina", "cat": "Food", "brand": "May Jara", "price": 7.75, "qty": 3, "desc": "Algarrobina syrup, 16oz. Traditional Peruvian carob.", "img": ""}, {"id": 181, "name": "Organic Maple Syrup", "cat": "Food", "brand": "Schullo", "price": 15.3, "qty": 3, "desc": "Organic maple syrup, 300g.", "img": ""}, {"id": 232, "name": "Cacao en Polvo (227g)", "cat": "Food", "brand": "Arawi", "price": 4.6, "qty": 3, "desc": "Cacao powder, 227g.", "img": ""}, {"id": 234, "name": "Manteca de Cacao (227g)", "cat": "Food", "brand": "Arawi", "price": 10.0, "qty": 3, "desc": "Cacao butter, 227g.", "img": ""}, {"id": 236, "name": "Nibs de Cacao", "cat": "Food", "brand": "Arawi", "price": 5.7, "qty": 3, "desc": "Cacao nibs, 227g.", "img": ""}, {"id": 238, "name": "Pasta de Cacao (454g)", "cat": "Food", "brand": "Arawi", "price": 11.5, "qty": 3, "desc": "Cacao paste, 454g.", "img": ""}, {"id": 253, "name": "Dates", "cat": "Food", "brand": "Tienda Nectar", "price": 6.0, "qty": 3, "desc": "Medjool dates, 454g.", "img": ""}, {"id": 264, "name": "Amaranto", "cat": "Food", "brand": "Schullo", "price": 4.27, "qty": 3, "desc": "Amaranth grain, 300g.", "img": ""}, {"id": 282, "name": "Aceite de Mostaza", "cat": "Food", "brand": "Chakra Seeds", "price": 18.5, "qty": 2, "desc": "Mustard oil, 250ml.", "img": ""}, {"id": 150, "name": "Fenugreek Seeds", "cat": "Food", "brand": "Chakra Seeds", "price": 14.0, "qty": 2, "desc": "Fenugreek seeds, 200g.", "img": ""}, {"id": 151, "name": "Hemp Seeds", "cat": "Food", "brand": "Chakra Seeds", "price": 9.75, "qty": 2, "desc": "Hemp seeds, 300g.", "img": ""}, {"id": 186, "name": "Red Maca Powder", "cat": "Food", "brand": "Chakra Seeds", "price": 8.75, "qty": 2, "desc": "Red maca root powder, 250g.", "img": ""}, {"id": 245, "name": "Trehalosa", "cat": "Food", "brand": "Tienda Nectar", "price": 7.0, "qty": 2, "desc": "Trehalose, 454g. Natural sweetener.", "img": ""}, {"id": 252, "name": "Pistachios", "cat": "Food", "brand": "Tienda Nectar", "price": 9.5, "qty": 2, "desc": "Pistachios, 454g.", "img": ""}, {"id": 277, "name": "Vinagre Manzana Apple", "cat": "Food", "brand": "Scorpii", "price": 5.0, "qty": 2, "desc": "Apple cider vinegar, 300ml.", "img": ""}, {"id": 160, "name": "Noni Linaza Spirulina", "cat": "Food", "brand": "GreenLife", "price": 7.0, "qty": 2, "desc": "Noni, flaxseed, and spirulina blend, 400g.", "img": ""}, {"id": 179, "name": "Sweet Drops Chocolate", "cat": "Food", "brand": "SweetLeaf", "price": 11.0, "qty": 2, "desc": "Chocolate-flavored liquid stevia drops, 60ml.", "img": ""}, {"id": 183, "name": "Black Maca Powder", "cat": "Food", "brand": "Chakra Seeds", "price": 8.75, "qty": 1, "desc": "Black maca root powder, 250g.", "img": ""}, {"id": 255, "name": "Ajonjolí", "cat": "Food", "brand": "Tienda Nectar", "price": 3.75, "qty": 1, "desc": "Sesame seeds, 250g.", "img": ""}, {"id": 257, "name": "Chia", "cat": "Food", "brand": "Schullo", "price": 5.61, "qty": 1, "desc": "Organic chia seeds, 300g.", "img": ""}, {"id": 263, "name": "Peanut Butter", "cat": "Food", "brand": "Crunchy", "price": 7.5, "qty": 2, "desc": "Peanut butter, 480g.", "img": ""}, {"id": 276, "name": "Vinagre Blanco Natural", "cat": "Food", "brand": "Toscana", "price": 2.0, "qty": 1, "desc": "Natural white vinegar, 1L.", "img": ""}, {"id": 284, "name": "Aceite de Nuez", "cat": "Food", "brand": "Karay", "price": 8.0, "qty": 1, "desc": "Walnut oil, 155ml.", "img": ""}, {"id": 286, "name": "Aceite de Coco (250ml)", "cat": "Food", "brand": "Cosecha de Lu", "price": 7.0, "qty": 1, "desc": "Coconut oil, 250ml.", "img": ""}, {"id": 288, "name": "Aceitunas Negras", "cat": "Food", "brand": "Oliveza", "price": 14.0, "qty": 1, "desc": "Black olives, 1kg.", "img": ""}, {"id": 289, "name": "Aceitunas Verdes", "cat": "Food", "brand": "Oliveza", "price": 13.75, "qty": 2, "desc": "Green olives, 1kg.", "img": ""}, {"id": 180, "name": "Stevia Drops", "cat": "Food", "brand": "GreenLife", "price": 5.75, "qty": 1, "desc": "Liquid stevia drops, 60ml.", "img": ""}, {"id": 152, "name": "Harina de Aguaje", "cat": "Food", "brand": "Chakra Seeds", "price": 8.5, "qty": 1, "desc": "Aguaje flour, 250g.", "img": ""}, {"id": 240, "name": "Coconut Sugar", "cat": "Food", "brand": "Karay", "price": 4.75, "qty": 1, "desc": "Coconut sugar, 200g.", "img": ""}, {"id": 244, "name": "Coco Rallado", "cat": "Food", "brand": "Proalmex", "price": 2.25, "qty": 1, "desc": "Shredded coconut, 80g.", "img": ""}, {"id": 251, "name": "Sunflower Seeds", "cat": "Food", "brand": "Tienda Nectar", "price": 2.0, "qty": 1, "desc": "Sunflower seeds, 227g.", "img": ""}, {"id": 248, "name": "Turmeric Powder", "cat": "Spices", "brand": "Tienda Nectar", "price": 3.25, "qty": 15, "desc": "Turmeric powder, 200g. Rich in curcumin.", "img": "https://drive.google.com/thumbnail?id=1c9JtoJg8rIbCyGJde2rQO9MCroFtRDri&sz=w400"}, {"id": 249, "name": "Cúrcuma en Polvo (1kg)", "cat": "Spices", "brand": "Cosecha de Lu", "price": 18.0, "qty": 3, "desc": "Turmeric powder, 1kg.", "img": ""}, {"id": 97, "name": "Ceylon Cinnamon", "cat": "Spices", "brand": "Tienda Nectar", "price": 2.0, "qty": 12, "desc": "Ceylon cinnamon powder, 30g. True cinnamon.", "img": "https://drive.google.com/thumbnail?id=1rtGllIcCL-ObfpnvV4MI2aEEoqD3aziz&sz=w400"}, {"id": 92, "name": "Black Pepper", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 8, "desc": "Black pepper, whole.", "img": ""}, {"id": 95, "name": "Black Sesame", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 8, "desc": "Black sesame seeds.", "img": ""}, {"id": 83, "name": "Onion Powder", "cat": "Spices", "brand": "Tienda Nectar", "price": 0.5, "qty": 5, "desc": "Onion powder (bulk).", "img": ""}, {"id": 218, "name": "Sal de Mar", "cat": "Spices", "brand": "Schullo", "price": 3.0, "qty": 5, "desc": "Sea salt, 500g.", "img": ""}, {"id": 219, "name": "Sal Rosada (454g)", "cat": "Spices", "brand": "Tienda Nectar", "price": 3.0, "qty": 9, "desc": "Pink salt, 454g.", "img": ""}, {"id": 93, "name": "Coriander", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 3, "desc": "Ground coriander.", "img": ""}, {"id": 214, "name": "Sal Negro Cuzco", "cat": "Spices", "brand": "Spezia", "price": 5.0, "qty": 2, "desc": "Specialty Cuzco black salt, 200g.", "img": ""}, {"id": 82, "name": "Garlic Powder", "cat": "Spices", "brand": "Tienda Nectar", "price": 0.5, "qty": 1, "desc": "Garlic powder (bulk).", "img": ""}, {"id": 90, "name": "White Pepper (whole)", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 1, "desc": "White pepper, whole.", "img": ""}, {"id": 91, "name": "White Pepper (powder)", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 1, "desc": "White pepper, powder.", "img": ""}, {"id": 94, "name": "Organic Pepper", "cat": "Spices", "brand": "Tienda Nectar", "price": 3.0, "qty": 1, "desc": "Organic pepper, whole.", "img": ""}, {"id": 96, "name": "Kala Namak", "cat": "Spices", "brand": "Tienda Nectar", "price": 1.0, "qty": 1, "desc": "Kala Namak black salt.", "img": ""}, {"id": 217, "name": "Sal Rosada (150g)", "cat": "Spices", "brand": "Wayra Mikuna", "price": 2.0, "qty": 1, "desc": "Pink salt, 150g.", "img": ""}, {"id": 222, "name": "Sea Salt + Cayenne", "cat": "Spices", "brand": "", "price": 2.0, "qty": 1, "desc": "Sea salt with cayenne blend.", "img": ""}, {"id": 223, "name": "Himalayan Pink Salt", "cat": "Spices", "brand": "Bless", "price": 2.0, "qty": 1, "desc": "Himalayan pink salt, 454g.", "img": ""}, {"id": 246, "name": "Extracto Natural de Vainilla", "cat": "Spices", "brand": "Vainuz", "price": 4.5, "qty": 1, "desc": "Natural vanilla extract, 100ml.", "img": ""}, {"id": 24, "name": "Hojas de Boldo", "cat": "Tea & Herbs", "brand": "Gran Selva Real", "price": 1.0, "qty": 24, "desc": "Boldo leaves, 24g. Traditional herb tea.", "img": "https://drive.google.com/thumbnail?id=12Uq8WASWn8L4_VJJ0TlLYfWaMe2ifsXn&sz=w400"}, {"id": 45, "name": "Jamaica / Hibiscus", "cat": "Tea & Herbs", "brand": "Gran Selva Real", "price": 1.0, "qty": 24, "desc": "Hibiscus loose leaf, 30g. Rich in antioxidants, caffeine-free.", "img": "https://onlynatural.vtexassets.com/arquivos/ids/156151-1200-auto?v=638923497148870000&width=1200&height=auto&aspect=true"}, {"id": 22, "name": "Cola de Caballo", "cat": "Tea & Herbs", "brand": "Gran Selva Real", "price": 1.0, "qty": 18, "desc": "Horsetail, 24g. Traditional herb for hair, skin, and nails.", "img": ""}, {"id": 23, "name": "Uña de Gato", "cat": "Tea & Herbs", "brand": "Gran Selva Real", "price": 1.0, "qty": 8, "desc": "Cat's claw, 60g. Traditional immune support herb.", "img": "https://drive.google.com/thumbnail?id=1EKmHHW2nqOMx63a4j-QhxFs2C-QjMfQ_&sz=w400"}, {"id": 40, "name": "Buenas Noches", "cat": "Tea & Herbs", "brand": "La Gracia", "price": 4.5, "qty": 6, "desc": "Calming herbal tea blend, 50g.", "img": ""}, {"id": 30, "name": "Earl Grey Tea", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 3.25, "qty": 6, "desc": "Earl Grey tea. Classic black tea with bergamot.", "img": ""}, {"id": 80, "name": "Organic Chives", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 3.0, "qty": 6, "desc": "Organic dried chives.", "img": ""}, {"id": 47, "name": "Nettle (Ortiga)", "cat": "Tea & Herbs", "brand": "Chakra Seeds", "price": 4.0, "qty": 5, "desc": "Nettle herb, 50g. Mineral-rich traditional herb tea.", "img": ""}, {"id": 46, "name": "Hojas de Sen", "cat": "Tea & Herbs", "brand": "Gran Selva Real", "price": 1.0, "qty": 5, "desc": "Senna leaves, 30g. Traditional digestive herb.", "img": ""}, {"id": 70, "name": "Matico", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 4, "desc": "Matico herb. Traditional Andean herb.", "img": ""}, {"id": 71, "name": "Tilo", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 4, "desc": "Tilo (linden) herb.", "img": ""}, {"id": 72, "name": "Borraja", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 5, "desc": "Borage herb. Traditional Andean remedy.", "img": ""}, {"id": 73, "name": "Eneldo", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 5, "desc": "Dill herb. Traditional digestive herb.", "img": ""}, {"id": 74, "name": "Guaviduca", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 5, "desc": "Guaviduca. Traditional Andean herb.", "img": ""}, {"id": 76, "name": "Flor Blanca", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 4, "desc": "White flower herb.", "img": ""}, {"id": 77, "name": "Hibiscus (Elixir)", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 5, "desc": "Hibiscus herb. Rich in antioxidants.", "img": ""}, {"id": 78, "name": "Stevia Leaf", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 3, "desc": "Stevia leaf, dried.", "img": ""}, {"id": 79, "name": "Alcachofa (herb)", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 3, "desc": "Artichoke leaf herb tea.", "img": ""}, {"id": 81, "name": "Bay Leaves", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 3.0, "qty": 3, "desc": "Dried bay leaves.", "img": ""}, {"id": 42, "name": "Jamaica (loose)", "cat": "Tea & Herbs", "brand": "", "price": 2.5, "qty": 3, "desc": "Hibiscus tea, loose.", "img": ""}, {"id": 48, "name": "Diente de León", "cat": "Tea & Herbs", "brand": "Chakra Seeds", "price": 5.0, "qty": 2, "desc": "Dandelion leaf tea, 50g.", "img": ""}, {"id": 75, "name": "Chugchuguazo", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 2, "desc": "Chugchuguazo herb. Traditional Andean herb.", "img": ""}, {"id": 25, "name": "Uña de Gato (Elixir)", "cat": "Tea & Herbs", "brand": "Elixir de Vida", "price": 1.0, "qty": 2, "desc": "Cat's claw herb.", "img": ""}, {"id": 26, "name": "Horsetail", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 1.0, "qty": 2, "desc": "Horsetail herb.", "img": ""}, {"id": 31, "name": "Té Negro & Limón", "cat": "Tea & Herbs", "brand": "Tippytea", "price": 5.0, "qty": 2, "desc": "Black tea with lemon, 100g.", "img": ""}, {"id": 39, "name": "Pasión Frutal", "cat": "Tea & Herbs", "brand": "La Gracia", "price": 4.5, "qty": 2, "desc": "Passion fruit herbal tea, 50g.", "img": ""}, {"id": 41, "name": "Té Cacao (125g)", "cat": "Tea & Herbs", "brand": "", "price": 2.0, "qty": 2, "desc": "Cacao tea, 125g.", "img": ""}, {"id": 43, "name": "Senna", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 1.0, "qty": 2, "desc": "Senna tea.", "img": ""}, {"id": 52, "name": "Hibiscus", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 1.0, "qty": 2, "desc": "Hibiscus tea.", "img": ""}, {"id": 27, "name": "Boldo", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 1.0, "qty": 1, "desc": "Boldo herb tea.", "img": ""}, {"id": 28, "name": "Té Verde", "cat": "Tea & Herbs", "brand": "Sangay", "price": 2.0, "qty": 1, "desc": "Green tea bags.", "img": ""}, {"id": 29, "name": "Flores de Caléndula", "cat": "Tea & Herbs", "brand": "Ruakh", "price": 5.0, "qty": 1, "desc": "Calendula flowers.", "img": ""}, {"id": 32, "name": "Matcha", "cat": "Tea & Herbs", "brand": "Tippytea", "price": 8.5, "qty": 1, "desc": "Matcha green tea powder, 50g.", "img": ""}, {"id": 34, "name": "Strawberry Green Tea", "cat": "Tea & Herbs", "brand": "Tippytea", "price": 4.75, "qty": 1, "desc": "Strawberry green tea, 45g.", "img": ""}, {"id": 35, "name": "Té Herbal Detox", "cat": "Tea & Herbs", "brand": "Chakra Seeds", "price": 6.25, "qty": 1, "desc": "Herbal detox tea blend, 40g.", "img": ""}, {"id": 38, "name": "Teatox", "cat": "Tea & Herbs", "brand": "La Gracia", "price": 5.0, "qty": 1, "desc": "Teatox herbal blend, 50g.", "img": ""}, {"id": 44, "name": "Té Cacao", "cat": "Tea & Herbs", "brand": "Tienda Nectar", "price": 1.0, "qty": 1, "desc": "Cacao tea.", "img": ""}, {"id": 316, "name": "Serum Vitamina C", "cat": "Personal Care", "brand": "Green Harmony", "price": 22.0, "qty": 7, "desc": "Vitamin C serum, 30ml. Topical antioxidant for brighter skin.", "img": ""}, {"id": 317, "name": "Serum Vitamina E", "cat": "Personal Care", "brand": "Green Harmony", "price": 14.0, "qty": 5, "desc": "Vitamin E serum, 30ml. Nourishing antioxidant for skin repair.", "img": ""}, {"id": 459, "name": "Carbon Activado Soap", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.0, "qty": 12, "desc": "Activated charcoal soap. Deep-cleansing bar for face and body.", "img": "https://drive.google.com/thumbnail?id=1zVbBFRtkio9X-Hi-7JA4hjbmIzdgSp0Q&sz=w400"}, {"id": 465, "name": "CBD Soap", "cat": "Personal Care", "brand": "Zerenydad", "price": 8.0, "qty": 7, "desc": "CBD soap. Gentle cleansing bar for calm, balanced skin.", "img": ""}, {"id": 301, "name": "Manzana Verde CBD", "cat": "Personal Care", "brand": "E-Liquid CBD", "price": 15.0, "qty": 7, "desc": "Green apple CBD e-liquid. For compatible devices only.", "img": ""}, {"id": 463, "name": "Arcilla Verde (Green Harmony)", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.0, "qty": 7, "desc": "Green clay. Mineral-rich for deep skin cleansing. External use.", "img": "https://drive.google.com/thumbnail?id=1-raypoJpQujYHo2gConIL5CVFQrqhPgA&sz=w400"}, {"id": 471, "name": "Shea Butter (Green Harmony)", "cat": "Personal Care", "brand": "Green Harmony", "price": 6.0, "qty": 6, "desc": "Shea butter, 125g. Rich natural moisturizer.", "img": "https://drive.google.com/thumbnail?id=11mDdN4QV_HRW5B9mWgiYi1hukx1ip8Iw&sz=w400"}, {"id": 460, "name": "Turmeric Soap", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.0, "qty": 6, "desc": "Turmeric soap. Anti-inflammatory cleansing bar.", "img": "https://drive.google.com/thumbnail?id=1rjQZGclDeXReXpIQ7ApY4Q2fBK9Y3zAY&sz=w400"}, {"id": 315, "name": "Crema de Propóleo", "cat": "Personal Care", "brand": "Dr. Obeeja", "price": 9.0, "qty": 4, "desc": "Propolis cream, 50g.", "img": ""}, {"id": 207, "name": "Castor Oil", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 6.5, "qty": 5, "desc": "Castor oil, 4oz. Traditional oil for skin and hair.", "img": ""}, {"id": 208, "name": "DMSO", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 5.0, "qty": 4, "desc": "DMSO, 50ml. For external use only.", "img": ""}, {"id": 466, "name": "Epsom Salt", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 3.0, "qty": 3, "desc": "Epsom salt. For bath soaks and external use.", "img": ""}, {"id": 334, "name": "Arcilla Verde", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.5, "qty": 3, "desc": "Green clay, 227g.", "img": ""}, {"id": 462, "name": "Lavanda Soap", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.25, "qty": 3, "desc": "Lavender soap. Calming natural cleansing bar.", "img": ""}, {"id": 329, "name": "Unlabeled Perfume", "cat": "Personal Care", "brand": "", "price": 20.0, "qty": 3, "desc": "Natural perfume — message us for details.", "img": ""}, {"id": 303, "name": "Rapé", "cat": "Personal Care", "brand": "", "price": 25.0, "qty": 3, "desc": "Rapé (sacred snuff). Traditional Amazonian herb preparation.", "img": ""}, {"id": 320, "name": "Barras de Sal Rosada (large)", "cat": "Personal Care", "brand": "", "price": 2.0, "qty": 5, "desc": "Himalayan pink salt bars, 250g.", "img": ""}, {"id": 321, "name": "Barras de Sal Rosada (small)", "cat": "Personal Care", "brand": "", "price": 1.0, "qty": 4, "desc": "Himalayan pink salt bars, small.", "img": ""}, {"id": 341, "name": "Toothbrush (white)", "cat": "Personal Care", "brand": "Ecodent", "price": 0.75, "qty": 4, "desc": "Natural toothbrush, white.", "img": ""}, {"id": 342, "name": "Toothbrush (black)", "cat": "Personal Care", "brand": "Ecodent", "price": 0.75, "qty": 4, "desc": "Natural toothbrush, black.", "img": ""}, {"id": 343, "name": "Healthy Gums and Teeth", "cat": "Personal Care", "brand": "Dentitox Pro", "price": 25.0, "qty": 3, "desc": "Natural dental care product.", "img": ""}, {"id": 456, "name": "Herbal Toothpaste (cinnamon)", "cat": "Personal Care", "brand": "Alpha Omega III", "price": 14.0, "qty": 4, "desc": "Herbal toothpaste, cinnamon flavor.", "img": ""}, {"id": 457, "name": "Herbal Toothpaste (spearmint)", "cat": "Personal Care", "brand": "Alpha Omega III", "price": 14.0, "qty": 3, "desc": "Herbal toothpaste, spearmint flavor.", "img": ""}, {"id": 302, "name": "Mente CBD", "cat": "Personal Care", "brand": "E-Liquid CBD", "price": 15.0, "qty": 4, "desc": "Mente CBD e-liquid. For compatible devices only.", "img": ""}, {"id": 323, "name": "Piedra de Alumbre", "cat": "Personal Care", "brand": "Chakra Seeds", "price": 8.25, "qty": 1, "desc": "Alum stone, 120g. Natural mineral deodorant.", "img": ""}, {"id": 319, "name": "Natural Deodorant", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 4.0, "qty": 3, "desc": "Natural deodorant.", "img": ""}, {"id": 327, "name": "Masaje Aceite Corporal", "cat": "Personal Care", "brand": "Green Harmony", "price": 8.0, "qty": 1, "desc": "Body massage oil, 30ml.", "img": ""}, {"id": 328, "name": "Crema Nutritiva", "cat": "Personal Care", "brand": "Dr. Obeeja", "price": 14.0, "qty": 1, "desc": "Nutritive face cream, 50g.", "img": ""}, {"id": 332, "name": "Unlabeled Chapstick", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 3.0, "qty": 2, "desc": "Natural lip balm (unlabeled).", "img": ""}, {"id": 364, "name": "Facial Massage Roller", "cat": "Personal Care", "brand": "", "price": 8.0, "qty": 1, "desc": "Rose quartz facial massage roller.", "img": ""}, {"id": 372, "name": "Relajación Aromatherapy Stick", "cat": "Personal Care", "brand": "Green Harmony", "price": 7.0, "qty": 1, "desc": "Aromatherapy relaxation stick.", "img": ""}, {"id": 389, "name": "Batana Oil", "cat": "Personal Care", "brand": "Batana Oil", "price": 8.0, "qty": 2, "desc": "Batana oil, 30ml. Traditional oil for hair and skin.", "img": ""}, {"id": 390, "name": "Ricino (Castor)", "cat": "Personal Care", "brand": "Green Harmony", "price": 12.0, "qty": 1, "desc": "Castor oil, 100ml.", "img": ""}, {"id": 455, "name": "Polvo de Dientes Carbon", "cat": "Personal Care", "brand": "", "price": 5.0, "qty": 2, "desc": "Activated charcoal tooth powder.", "img": ""}, {"id": 464, "name": "Round Black Soap", "cat": "Personal Care", "brand": "El Artesano", "price": 3.5, "qty": 2, "desc": "Round black soap.", "img": ""}, {"id": 467, "name": "Manteca de Mango (150g)", "cat": "Personal Care", "brand": "Chakra Seeds", "price": 12.5, "qty": 1, "desc": "Mango butter, 150g.", "img": ""}, {"id": 468, "name": "Manteca de Mango (130g)", "cat": "Personal Care", "brand": "Chakra Seeds", "price": 9.0, "qty": 2, "desc": "Mango butter, 130g.", "img": ""}, {"id": 469, "name": "Manteca de Karite", "cat": "Personal Care", "brand": "Chakra Seeds", "price": 8.0, "qty": 1, "desc": "Shea butter, 200g.", "img": ""}, {"id": 472, "name": "Sal de Epsom Detox", "cat": "Personal Care", "brand": "Green Harmony", "price": 2.75, "qty": 1, "desc": "Epsom salt detox formula, 100g.", "img": ""}, {"id": 473, "name": "Vera Herbal Shampoo", "cat": "Personal Care", "brand": "Melody of Plants", "price": 15.0, "qty": 1, "desc": "Vera herbal cleansing shampoo, 10oz.", "img": ""}, {"id": 474, "name": "Carbon Activado Shampoo", "cat": "Personal Care", "brand": "Beleva", "price": 6.0, "qty": 1, "desc": "Activated charcoal shampoo, 16oz.", "img": ""}, {"id": 308, "name": "Ivermectina", "cat": "Personal Care", "brand": "Ivermin", "price": 3.25, "qty": 1, "desc": "Ivermectin, 6 tablets. Ask for details.", "img": ""}, {"id": 333, "name": "Arcilla Bentonita", "cat": "Personal Care", "brand": "Green Harmony", "price": 5.0, "qty": 2, "desc": "Bentonite clay, 227g.", "img": ""}, {"id": 335, "name": "Arcilla Blanca", "cat": "Personal Care", "brand": "Green Harmony", "price": 4.75, "qty": 1, "desc": "White kaolin clay, 227g.", "img": ""}, {"id": 338, "name": "Santo Remedio", "cat": "Personal Care", "brand": "Wasinutry", "price": 5.0, "qty": 2, "desc": "Santo Remedio natural product.", "img": ""}, {"id": 313, "name": "Chickweed Skin Salve", "cat": "Personal Care", "brand": "Tienda Nectar", "price": 5.0, "qty": 1, "desc": "Chickweed salve. Traditional soothing skin preparation.", "img": ""}, {"id": 312, "name": "Healing Cream", "cat": "Personal Care", "brand": "Matiku", "price": 6.25, "qty": 1, "desc": "Natural healing cream, 22g.", "img": ""}, {"id": 314, "name": "Pomada de Lavanda", "cat": "Personal Care", "brand": "Plantas Medicinales", "price": 6.0, "qty": 1, "desc": "Lavender ointment.", "img": ""}, {"id": 318, "name": "Extracto de Árbol de Té", "cat": "Personal Care", "brand": "Ecoterra", "price": 11.0, "qty": 1, "desc": "Tea tree extract.", "img": ""}, {"id": 311, "name": "Aceite de Semilla de Uva", "cat": "Personal Care", "brand": "", "price": 9.25, "qty": 1, "desc": "Grapeseed oil. Light carrier oil for skin care.", "img": ""}, {"id": 344, "name": "Lomatium", "cat": "Tinctures", "brand": "Herbamama", "price": 17.0, "qty": 1, "desc": "Lomatium tincture, 4oz.", "img": ""}, {"id": 345, "name": "Cordyceps", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 10.0, "qty": 3, "desc": "Cordyceps mushroom tincture, 50ml.", "img": ""}, {"id": 346, "name": "Lion's Mane", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 10.0, "qty": 1, "desc": "Lion's mane mushroom tincture.", "img": ""}, {"id": 347, "name": "Maitake", "cat": "Tinctures", "brand": "Lucidum", "price": 42.0, "qty": 1, "desc": "Maitake mushroom tincture.", "img": ""}, {"id": 348, "name": "Ganoderma", "cat": "Tinctures", "brand": "Lucidum", "price": 42.0, "qty": 1, "desc": "Ganoderma (reishi) tincture.", "img": ""}, {"id": 349, "name": "Turkey Tail Mushroom", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 9.5, "qty": 1, "desc": "Turkey tail mushroom tincture, 50ml.", "img": ""}, {"id": 350, "name": "Vagus Nerve Stimulator", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 6.25, "qty": 1, "desc": "Vagus nerve tincture blend.", "img": ""}, {"id": 351, "name": "Nettle Tincture", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 6.5, "qty": 2, "desc": "Nettle tincture, 50ml.", "img": ""}, {"id": 352, "name": "Chaga Tincture", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 10.0, "qty": 1, "desc": "Chaga mushroom tincture, 50ml.", "img": ""}, {"id": 353, "name": "Propóleo Dropper", "cat": "Tinctures", "brand": "Api Loja", "price": 4.5, "qty": 2, "desc": "Propolis dropper tincture, 20ml.", "img": ""}, {"id": 354, "name": "Propóleo Spray", "cat": "Tinctures", "brand": "Api Loja", "price": 8.0, "qty": 2, "desc": "Propolis spray tincture, 20ml.", "img": ""}, {"id": 355, "name": "Uva Ursi", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 7.0, "qty": 1, "desc": "Uva ursi tincture, 50ml.", "img": ""}, {"id": 356, "name": "Dandelion", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 6.5, "qty": 2, "desc": "Dandelion tincture, 50ml.", "img": ""}, {"id": 357, "name": "Marshmallow Root", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 9.5, "qty": 2, "desc": "Marshmallow root tincture, 50ml.", "img": ""}, {"id": 358, "name": "Ajenjo", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 8.75, "qty": 1, "desc": "Wormwood tincture, 50ml.", "img": ""}, {"id": 359, "name": "Olive Leaf", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 8.75, "qty": 3, "desc": "Olive leaf tincture, 50ml.", "img": ""}, {"id": 360, "name": "Orégano (tincture)", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 5.0, "qty": 1, "desc": "Oregano tincture, 50ml.", "img": ""}, {"id": 361, "name": "Pau D'Arco", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 6.0, "qty": 3, "desc": "Pau d'arco tincture, 50ml.", "img": ""}, {"id": 362, "name": "Liquid Zeolite", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 10.0, "qty": 3, "desc": "Liquid zeolite, 50ml.", "img": ""}, {"id": 363, "name": "Black Walnut", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 8.75, "qty": 1, "desc": "Black walnut tincture, 50ml.", "img": ""}, {"id": 161, "name": "Colloidal Silver", "cat": "Tinctures", "brand": "Tienda Nectar", "price": 9.0, "qty": 3, "desc": "Colloidal silver, 8oz. 70-125 ppm.", "img": ""}, {"id": 368, "name": "MMS: Activador", "cat": "Tinctures", "brand": "", "price": 10.0, "qty": 2, "desc": "MMS activator — ask for details.", "img": ""}, {"id": 369, "name": "MMS: Clorito de Sodio 28%", "cat": "Tinctures", "brand": "", "price": 10.0, "qty": 2, "desc": "MMS sodium chlorite 28% — ask for details.", "img": ""}, {"id": 515, "name": "Niacina (B3)", "cat": "Supplements", "brand": "Only Natural", "price": 6.75, "qty": 22, "desc": "Niacin 100mg, 100 tablets. Energy production and circulation.", "img": "https://drive.google.com/thumbnail?id=1Viy82df6t_axaLvHxv0VoAzaTS6RdkaG&sz=w400"}, {"id": 501, "name": "St. John's Wort", "cat": "Supplements", "brand": "Only Natural", "price": 6.5, "qty": 18, "desc": "St. John's Wort 150mg, 60 capsules. Traditional herb for mood support.", "img": "https://drive.google.com/thumbnail?id=12Y9Yu-oo4hP0q6LgbQvp2xFeetQsTjRn&sz=w400"}, {"id": 55, "name": "Bee Propolis", "cat": "Supplements", "brand": "Only Natural", "price": 9.5, "qty": 12, "desc": "Bee propolis 500mg, 60 capsules. Immune defense.", "img": ""}, {"id": 544, "name": "Echinacea", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 10, "desc": "Echinacea 400mg, 60 capsules. Immune function support.", "img": "https://drive.google.com/thumbnail?id=1Lg0z4NA_0K68kFqgrZCIYnnBomBH3IDI&sz=w400"}, {"id": 489, "name": "Hair / Skin / Nails", "cat": "Supplements", "brand": "ALFA", "price": 15.9, "qty": 10, "desc": "Hair, Skin & Nails formula, 60 capsules.", "img": ""}, {"id": 499, "name": "Selenium", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 9, "desc": "Selenium 50mcg, 100 capsules. Thyroid and immune health.", "img": "https://drive.google.com/thumbnail?id=1gbjlATo3R2IldjPS5nDVIIqNWmhlx-ef&sz=w400"}, {"id": 506, "name": "Zinc", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 9, "desc": "Zinc 50mg, 100 tablets. Immune function and skin health.", "img": "https://drive.google.com/thumbnail?id=1AtRy2834_3QiXZLdxb7gJmGkRmePXwXQ&sz=w400"}, {"id": 483, "name": "Vita Cacao", "cat": "Supplements", "brand": "", "price": 25.0, "qty": 9, "desc": "Vita Cacao 550mg, 60 capsules. Cacao extract. Refrigerate.", "img": ""}, {"id": 492, "name": "MultiWoman Super Potent", "cat": "Supplements", "brand": "ALFA", "price": 25.0, "qty": 8, "desc": "Women's multivitamin, 100 tablets.", "img": ""}, {"id": 482, "name": "Egg Literate Gold", "cat": "Supplements", "brand": "", "price": 30.0, "qty": 8, "desc": "Anti-aging superfood formula, 120 capsules. Refrigerate.", "img": ""}, {"id": 53, "name": "Colostrum", "cat": "Supplements", "brand": "Only Natural", "price": 6.5, "qty": 8, "desc": "Colostrum 500mg, 60 softgels. Immune health and gut integrity.", "img": "https://drive.google.com/thumbnail?id=1_vDP71lD3PpFJ8yWlohQDHZt6QyZ4bw1&sz=w400"}, {"id": 546, "name": "Enzima de Papaya", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 8, "desc": "Papaya enzyme, 100 tablets. Digestive support.", "img": "https://drive.google.com/thumbnail?id=12MD537pKQ8S4Q6A8GSEMigZCa8KwzPjI&sz=w400"}, {"id": 570, "name": "Ashwagandha Capsules", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.5, "qty": 8, "desc": "Ashwagandha, 25 capsules.", "img": ""}, {"id": 567, "name": "Cayenne Capsules", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.0, "qty": 8, "desc": "Cayenne capsules. Supports circulation.", "img": ""}, {"id": 205, "name": "Lugols 7%", "cat": "Supplements", "brand": "Tienda Nectar", "price": 9.0, "qty": 7, "desc": "Lugol's iodine 7%, 30ml. Thyroid support.", "img": ""}, {"id": 516, "name": "Potasio", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 7, "desc": "Potassium 99mg, 100 tablets.", "img": "https://drive.google.com/thumbnail?id=1oHTvisnj_tr-Jbp8DqR-11vtm_Xxxcku&sz=w400"}, {"id": 528, "name": "Ginkgo Biloba", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 7, "desc": "Ginkgo biloba 500mg, 100 tablets. Memory and cognitive support.", "img": ""}, {"id": 551, "name": "Amino Acids", "cat": "Supplements", "brand": "Only Natural", "price": 10.0, "qty": 7, "desc": "Amino acids 1000mg, 90 tablets.", "img": "https://drive.google.com/thumbnail?id=1xxCifW5Ai45nKUqp0uYszcQgUtrLDz2K&sz=w400"}, {"id": 558, "name": "Complex B", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 7, "desc": "B-complex, 100 tablets.", "img": "https://drive.google.com/thumbnail?id=1k2mL0rQKkfFCSodNorucq0AV3kxD4idF&sz=w400"}, {"id": 540, "name": "Colon Cleanser", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 7, "desc": "Colon cleanser 500mg, 100 capsules.", "img": ""}, {"id": 494, "name": "Prostatiin Male Formula", "cat": "Supplements", "brand": "ALFA", "price": 28.8, "qty": 7, "desc": "Prostate support formula, 120 capsules.", "img": "https://drive.google.com/thumbnail?id=1MMAsNx_FBuX5EPwtYL8L5g3SJvBbxVQP&sz=w400"}, {"id": 524, "name": "Ginseng Bee Pollen Vit E", "cat": "Supplements", "brand": "Only Natural", "price": 11.5, "qty": 6, "desc": "Ginseng, bee pollen, and vitamin E, 100 capsules.", "img": ""}, {"id": 543, "name": "L-Carnitine", "cat": "Supplements", "brand": "ALFA", "price": 15.5, "qty": 6, "desc": "L-carnitine 500mg, 60 capsules.", "img": ""}, {"id": 164, "name": "Triple Black Ajo", "cat": "Supplements", "brand": "Nature's Garden", "price": 15.6, "qty": 6, "desc": "Triple black garlic, 60 capsules.", "img": ""}, {"id": 139, "name": "Turmeric w/ Pepper", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 16.0, "qty": 6, "desc": "Turmeric with black pepper, 100 capsules.", "img": ""}, {"id": 566, "name": "Moringa Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.0, "qty": 6, "desc": "Moringa powder (bulk), 30g.", "img": ""}, {"id": 569, "name": "Ashwagandha Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.0, "qty": 6, "desc": "Ashwagandha powder (bulk), 30g.", "img": ""}, {"id": 503, "name": "Milk Thistle", "cat": "Supplements", "brand": "Only Natural", "price": 7.0, "qty": 6, "desc": "Silymarin (milk thistle) 1000mg, 60 capsules. Liver support.", "img": "https://drive.google.com/thumbnail?id=1z1DN2l8fd_gqosTrqDAwqFrwQ6FSn9HB&sz=w400"}, {"id": 541, "name": "Vitamina K2 + D3", "cat": "Supplements", "brand": "VitaHealth", "price": 13.0, "qty": 6, "desc": "Vitamin K2 + D3, 60 capsules.", "img": ""}, {"id": 553, "name": "Vitamina B-1", "cat": "Supplements", "brand": "Only Natural", "price": 15.0, "qty": 5, "desc": "Vitamin B-1 250mg, 100 tablets.", "img": "https://drive.google.com/thumbnail?id=1k2mL0rQKkfFCSodNorucq0AV3kxD4idF&sz=w400"}, {"id": 555, "name": "Vitamina B-12", "cat": "Supplements", "brand": "Only Natural", "price": 5.25, "qty": 5, "desc": "Vitamin B-12 500mcg, 100 tablets.", "img": "https://drive.google.com/thumbnail?id=1GVSFufQSMABw7WjcI2PD03cgsNJZM_XR&sz=w400"}, {"id": 563, "name": "Chromium Picolinate", "cat": "Supplements", "brand": "ALFA", "price": 11.0, "qty": 5, "desc": "Chromium picolinate 400mcg, 100 tablets.", "img": "https://drive.google.com/thumbnail?id=1RRq8WSj27JVisbWvulMe83suxfQaj-t-&sz=w400"}, {"id": 480, "name": "Cod Liver Oil", "cat": "Supplements", "brand": "Only Natural", "price": 9.0, "qty": 5, "desc": "Cod liver oil 500IU, 100 capsules. Refrigerate.", "img": "https://drive.google.com/thumbnail?id=1gYdsVw9WB8kfBRfHY-EqdNIhd8T4lW6E&sz=w400"}, {"id": 481, "name": "Vitamin E 400", "cat": "Supplements", "brand": "Only Natural", "price": 6.5, "qty": 5, "desc": "Vitamin E 400IU, 100 softgels. Refrigerate.", "img": "https://drive.google.com/thumbnail?id=1XMtSvVw53G0aJMSXwgLIZ9C_Rkv0Vbwe&sz=w400"}, {"id": 490, "name": "Iron Glycinate", "cat": "Supplements", "brand": "Only Natural", "price": 9.0, "qty": 5, "desc": "Iron glycinate 28mg, 90 capsules.", "img": "https://drive.google.com/thumbnail?id=1-j_uQZGyzwPxmfX9T72D77FwvvJIElJC&sz=w400"}, {"id": 552, "name": "Beta Carotene", "cat": "Supplements", "brand": "Only Natural", "price": 9.25, "qty": 5, "desc": "Beta carotene 25,000IU, 100 capsules.", "img": "https://drive.google.com/thumbnail?id=1BU0M6gka_pwKYhC7e354AyvJgOaGgrmB&sz=w400"}, {"id": 497, "name": "Saw Palmetto", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 5, "desc": "Saw palmetto 250mg, 120 capsules.", "img": "https://drive.google.com/thumbnail?id=1yLAF3USilSbirGGqhy6mMa5QG4I-K-MK&sz=w400"}, {"id": 173, "name": "Moringa (Labmac)", "cat": "Supplements", "brand": "Labmac", "price": 12.0, "qty": 5, "desc": "Moringa, 100 capsules.", "img": ""}, {"id": 142, "name": "Moringa (Alpha Omega)", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 19.0, "qty": 4, "desc": "Moringa, 120 capsules.", "img": ""}, {"id": 509, "name": "Citrato de Magnesio", "cat": "Supplements", "brand": "Nature's Garden", "price": 13.0, "qty": 4, "desc": "Magnesium citrate, 60 tablets.", "img": ""}, {"id": 519, "name": "Silmarina + B3 + Alcachofa", "cat": "Supplements", "brand": "", "price": 11.25, "qty": 4, "desc": "Silymarin, B3, and artichoke, 60 tablets.", "img": ""}, {"id": 533, "name": "Luteína", "cat": "Supplements", "brand": "ALFA", "price": 12.0, "qty": 4, "desc": "Lutein 20mg, 60 capsules. Eye health.", "img": ""}, {"id": 210, "name": "Carbon Vegetal Activado", "cat": "Supplements", "brand": "NatuAlfa", "price": 11.3, "qty": 4, "desc": "Activated charcoal, 60 capsules.", "img": ""}, {"id": 211, "name": "Charcoal Max", "cat": "Supplements", "brand": "HerbalMax", "price": 18.0, "qty": 4, "desc": "Charcoal Max, 100 softgels.", "img": ""}, {"id": 491, "name": "Fetoestógeno", "cat": "Supplements", "brand": "Only Natural", "price": 10.0, "qty": 4, "desc": "Phytoestrogen formula, 60 capsules.", "img": ""}, {"id": 200, "name": "Psyllium Husk", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.0, "qty": 4, "desc": "Organic psyllium husk.", "img": ""}, {"id": 143, "name": "Uña de Gato Caps", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 13.0, "qty": 4, "desc": "Cat's claw, 100 capsules.", "img": ""}, {"id": 206, "name": "Dragon's Blood", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.5, "qty": 4, "desc": "Dragon's blood (sangre de drago) resin, 30ml.", "img": ""}, {"id": 502, "name": "Theravim M FTNA", "cat": "Supplements", "brand": "Only Natural", "price": 4.75, "qty": 4, "desc": "Theravim M FTNA, 30 tablets.", "img": ""}, {"id": 504, "name": "Theravita M", "cat": "Supplements", "brand": "Only Natural", "price": 9.0, "qty": 4, "desc": "Theravita M, 100 tablets.", "img": ""}, {"id": 505, "name": "Zinc (Only Natural)", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 4, "desc": "Zinc 50mg, 100 tablets.", "img": ""}, {"id": 522, "name": "Garlic & Parsley", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 4, "desc": "Garlic and parsley 500mg, 100 capsules.", "img": ""}, {"id": 554, "name": "Vitamina B-2", "cat": "Supplements", "brand": "Only Natural", "price": 10.5, "qty": 4, "desc": "Vitamin B-2 100mg, 100 tablets.", "img": ""}, {"id": 561, "name": "Biotina (Only Natural)", "cat": "Supplements", "brand": "Only Natural", "price": 4.5, "qty": 4, "desc": "Biotin 300mcg, 100 tablets.", "img": ""}, {"id": 485, "name": "Liv-A", "cat": "Supplements", "brand": "Nature Sunshine", "price": 25.0, "qty": 4, "desc": "Liv-A liver support formula, 100 capsules.", "img": ""}, {"id": 486, "name": "B-14 Capsules", "cat": "Supplements", "brand": "Nature Sunshine", "price": 40.0, "qty": 4, "desc": "B-14 formula, 100 capsules.", "img": ""}, {"id": 453, "name": "Aceite de Ungurahua", "cat": "Supplements", "brand": "Chakra Seeds", "price": 11.0, "qty": 4, "desc": "Ungurahua oil.", "img": ""}, {"id": 209, "name": "Carbon Activado + Sábila", "cat": "Supplements", "brand": "Natural Factors", "price": 14.0, "qty": 3, "desc": "Activated charcoal with aloe vera, 100 capsules.", "img": ""}, {"id": 162, "name": "Shilajit Men", "cat": "Supplements", "brand": "La Milenaria", "price": 29.0, "qty": 3, "desc": "Shilajit fulvic acid 5%, 60 capsules.", "img": ""}, {"id": 476, "name": "Acidophilus", "cat": "Supplements", "brand": "Only Natural", "price": 7.25, "qty": 3, "desc": "Acidophilus probiotic, 100 capsules. Refrigerate.", "img": ""}, {"id": 59, "name": "Zanahoria en Polvo", "cat": "Supplements", "brand": "Chakra Seeds", "price": 13.5, "qty": 3, "desc": "Carrot powder, 60 capsules.", "img": ""}, {"id": 12, "name": "Boldo Caps", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 4, "desc": "Boldo, 100 tablets.", "img": ""}, {"id": 131, "name": "Strongmac Plus", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 4, "desc": "Strongmac Plus, 100 tablets.", "img": ""}, {"id": 141, "name": "Malluca", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 14.5, "qty": 3, "desc": "Malluca, 120 capsules.", "img": ""}, {"id": 182, "name": "Maca Negra + Colágeno", "cat": "Supplements", "brand": "Cipronag", "price": 3.5, "qty": 5, "desc": "Black maca with collagen, 80g.", "img": ""}, {"id": 201, "name": "Borax", "cat": "Supplements", "brand": "Tienda Nectar", "price": 1.0, "qty": 8, "desc": "Borax (sodium borate). For cleaning and external use only.", "img": ""}, {"id": 452, "name": "Aceite de Aguaje", "cat": "Supplements", "brand": "Chakra Seeds", "price": 11.0, "qty": 3, "desc": "Aguaje oil.", "img": ""}, {"id": 166, "name": "Citrato de Magnesio (alt)", "cat": "Supplements", "brand": "Natures Garden", "price": 13.5, "qty": 3, "desc": "Magnesium citrate, 60 tablets.", "img": ""}, {"id": 165, "name": "MagnesioLive", "cat": "Supplements", "brand": "Natures Garden", "price": 9.5, "qty": 3, "desc": "Magnesium, 90 tablets.", "img": ""}, {"id": 194, "name": "Hawthorne Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.75, "qty": 3, "desc": "Hawthorn berry powder, 25g.", "img": ""}, {"id": 195, "name": "Biosil Silica/Choline", "cat": "Supplements", "brand": "Tienda Nectar", "price": 15.0, "qty": 3, "desc": "Biosil silica and choline, 30 capsules.", "img": ""}, {"id": 197, "name": "Niacin USP Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.0, "qty": 3, "desc": "Niacin USP powder, 25g.", "img": ""}, {"id": 189, "name": "Hair Formula", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.75, "qty": 3, "desc": "Hair formula, 25 capsules.", "img": ""}, {"id": 510, "name": "Multi Vitaminas Minerales", "cat": "Supplements", "brand": "Living Natural", "price": 5.0, "qty": 3, "desc": "Multivitamins with minerals, 60 softgels.", "img": ""}, {"id": 525, "name": "Glucosamina Chondroitin", "cat": "Supplements", "brand": "Only Natural", "price": 13.0, "qty": 3, "desc": "Glucosamine chondroitin, 60 tablets.", "img": ""}, {"id": 530, "name": "Ginkgo Biloba Extracto", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 3, "desc": "Ginkgo biloba extract, 90 tablets.", "img": ""}, {"id": 535, "name": "K-100", "cat": "Supplements", "brand": "Only Natural", "price": 4.0, "qty": 3, "desc": "Vitamin K 100mcg, 100 tablets.", "img": ""}, {"id": 538, "name": "Coenzima Q-10", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 3, "desc": "Coenzyme Q-10 10mg, 60 capsules.", "img": ""}, {"id": 539, "name": "Vitamina C (500mg)", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 4, "desc": "Vitamin C 500mg, 100 tablets.", "img": ""}, {"id": 550, "name": "Aloe Vera Caps", "cat": "Supplements", "brand": "Only Natural", "price": 8.0, "qty": 3, "desc": "Aloe vera 5000mg, 60 capsules.", "img": ""}, {"id": 192, "name": "Raspberry Leaf", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.25, "qty": 2, "desc": "Raspberry leaf, 25 capsules.", "img": ""}, {"id": 124, "name": "Alfalfa", "cat": "Supplements", "brand": "Proland Labs", "price": 8.0, "qty": 2, "desc": "Alfalfa, 100 tablets.", "img": ""}, {"id": 134, "name": "Carbon-Mac", "cat": "Supplements", "brand": "Labmac", "price": 12.0, "qty": 2, "desc": "Carbon-Mac, 100 tablets.", "img": ""}, {"id": 140, "name": "Candida Caps", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 45.0, "qty": 3, "desc": "Candida formula, 120 capsules.", "img": ""}, {"id": 132, "name": "Graviola", "cat": "Supplements", "brand": "Amazona", "price": 42.0, "qty": 2, "desc": "Graviola (soursop), 100 capsules.", "img": ""}, {"id": 171, "name": "Alga Chlorella", "cat": "Supplements", "brand": "Chakra Seeds", "price": 17.25, "qty": 2, "desc": "Chlorella algae, 150g.", "img": ""}, {"id": 560, "name": "Biotin + Keratin", "cat": "Supplements", "brand": "Nature's Truth", "price": 15.75, "qty": 2, "desc": "Biotin and keratin, 50 capsules.", "img": ""}, {"id": 562, "name": "B6", "cat": "Supplements", "brand": "Only Natural", "price": 6.0, "qty": 3, "desc": "Vitamin B-6 100mg, 100 tablets.", "img": ""}, {"id": 547, "name": "Ca-500", "cat": "Supplements", "brand": "Amazona", "price": 6.0, "qty": 2, "desc": "Calcium 500mg, 100 tablets.", "img": ""}, {"id": 496, "name": "Saw Palmetto (alt)", "cat": "Supplements", "brand": "Only Natural", "price": 10.0, "qty": 2, "desc": "Saw palmetto 1000mg, 60 softgels.", "img": ""}, {"id": 204, "name": "Lugols 2.2%", "cat": "Supplements", "brand": "Tienda Nectar", "price": 9.0, "qty": 2, "desc": "Lugol's iodine 2.2%, 50ml.", "img": ""}, {"id": 549, "name": "Vitamina A", "cat": "Supplements", "brand": "Only Natural", "price": 4.75, "qty": 2, "desc": "Vitamin A 10,000IU, 100 softgels.", "img": ""}, {"id": 557, "name": "Vitamin A (alt)", "cat": "Supplements", "brand": "Herbalmax", "price": 6.5, "qty": 2, "desc": "Vitamin A 10,000IU, 100 softgels.", "img": ""}, {"id": 203, "name": "Vitamin C Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 5.0, "qty": 2, "desc": "Vitamin C powder.", "img": ""}, {"id": 451, "name": "Aceite de Copaiba", "cat": "Supplements", "brand": "Nature's Garden", "price": 9.0, "qty": 2, "desc": "Copaiba oil, 30ml.", "img": ""}, {"id": 484, "name": "Master Gland", "cat": "Supplements", "brand": "Nature Sunshine", "price": 3.5, "qty": 2, "desc": "Master gland formula, 120 capsules.", "img": ""}, {"id": 488, "name": "LBS-2", "cat": "Supplements", "brand": "Nature Sunshine", "price": 25.0, "qty": 2, "desc": "LBS-2 formula, 100 capsules.", "img": ""}, {"id": 498, "name": "Multivitamin", "cat": "Supplements", "brand": "Only Natural", "price": 7.8, "qty": 2, "desc": "Multivitamin, 60 tablets.", "img": ""}, {"id": 15, "name": "Ortiga Caps", "cat": "Supplements", "brand": "NatuAlfa", "price": 9.0, "qty": 2, "desc": "Nettle capsules, 100 tablets.", "img": ""}, {"id": 135, "name": "Zarzaparrilla", "cat": "Supplements", "brand": "Labmac", "price": 9.0, "qty": 1, "desc": "Sarsaparilla, 100 tablets.", "img": ""}, {"id": 126, "name": "Alcachofa Caps", "cat": "Supplements", "brand": "Proland Labs", "price": 8.0, "qty": 1, "desc": "Artichoke extract, 100 tablets.", "img": ""}, {"id": 138, "name": "Bitter Melon", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 35.0, "qty": 1, "desc": "Bitter melon, 120 capsules.", "img": ""}, {"id": 144, "name": "Samambaia", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 19.0, "qty": 1, "desc": "Samambaia fern, 120 capsules.", "img": ""}, {"id": 145, "name": "Bone Formula", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 28.0, "qty": 1, "desc": "Bone support formula, 120 capsules.", "img": ""}, {"id": 146, "name": "Amazon Bloodroot", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 40.0, "qty": 1, "desc": "Amazon bloodroot, 100 capsules.", "img": ""}, {"id": 147, "name": "Amazon Tonic III", "cat": "Supplements", "brand": "Alpha Omega Labs", "price": 60.0, "qty": 1, "desc": "Amazon Tonic III, 8oz.", "img": ""}, {"id": 153, "name": "Propóleo en Miel", "cat": "Supplements", "brand": "Renase", "price": 8.25, "qty": 1, "desc": "Propolis in honey, 120ml.", "img": ""}, {"id": 157, "name": "Arc Living Minerals", "cat": "Supplements", "brand": "Iridium Blue", "price": 25.5, "qty": 1, "desc": "Arc Living Minerals, 30ml.", "img": ""}, {"id": 158, "name": "Esencia de Pino", "cat": "Supplements", "brand": "La Gracia", "price": 25.0, "qty": 1, "desc": "Pine essence, 50ml.", "img": ""}, {"id": 163, "name": "Good Sleep", "cat": "Supplements", "brand": "Natures Garden", "price": 9.0, "qty": 1, "desc": "Melatonin 1mg, 60 tablets.", "img": ""}, {"id": 168, "name": "Cúrcuma Jengibre B1 B6", "cat": "Supplements", "brand": "Natures Garden", "price": 9.0, "qty": 1, "desc": "Turmeric, ginger, B1, B6 combination.", "img": ""}, {"id": 188, "name": "MCT", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.0, "qty": 1, "desc": "MCT, 25 capsules.", "img": ""}, {"id": 190, "name": "Andrographis Extract", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.5, "qty": 1, "desc": "Andrographis extract, 30 capsules.", "img": ""}, {"id": 191, "name": "Pectin Citrus", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.25, "qty": 1, "desc": "Citrus pectin, 25 capsules.", "img": ""}, {"id": 193, "name": "Betaine HCL", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.25, "qty": 1, "desc": "Betaine HCL 625mg, 25 capsules.", "img": ""}, {"id": 196, "name": "Triphala Powder", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.5, "qty": 1, "desc": "Triphala powder, 25 capsules.", "img": ""}, {"id": 198, "name": "Ceylon Cinnamon Caps", "cat": "Supplements", "brand": "Tienda Nectar", "price": 3.5, "qty": 1, "desc": "Ceylon cinnamon, 25 capsules.", "img": ""}, {"id": 199, "name": "Lysine", "cat": "Supplements", "brand": "Tienda Nectar", "price": 4.75, "qty": 1, "desc": "L-lysine amino acid, 25 capsules.", "img": ""}, {"id": 487, "name": "URY", "cat": "Supplements", "brand": "Nature Sunshine", "price": 27.0, "qty": 1, "desc": "URY formula, 120 capsules.", "img": ""}, {"id": 495, "name": "Potensec", "cat": "Supplements", "brand": "ALFA", "price": 14.2, "qty": 1, "desc": "Potensec, 60 tablets.", "img": ""}, {"id": 512, "name": "Magnesium + B6", "cat": "Supplements", "brand": "ALFA", "price": 12.0, "qty": 1, "desc": "Magnesium with B6, 100 tablets.", "img": ""}, {"id": 514, "name": "Melatonin", "cat": "Supplements", "brand": "Only Natural", "price": 5.0, "qty": 1, "desc": "Melatonin 3mg, 60 tablets.", "img": ""}, {"id": 518, "name": "Potassium (ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 6.5, "qty": 1, "desc": "Potassium, 100 tablets.", "img": ""}, {"id": 523, "name": "Garlic Oil", "cat": "Supplements", "brand": "Only Natural", "price": 6.75, "qty": 1, "desc": "Garlic oil 5000mg, 100 capsules.", "img": ""}, {"id": 526, "name": "Sulfato de Glucosamina", "cat": "Supplements", "brand": "Only Natural", "price": 15.0, "qty": 1, "desc": "Glucosamine sulfate 1000mg, 100 capsules.", "img": ""}, {"id": 49, "name": "Gránulos de Polen", "cat": "Supplements", "brand": "Chakra Seeds", "price": 7.5, "qty": 1, "desc": "Bee pollen granules, 250g.", "img": ""}, {"id": 475, "name": "Water Purification Bottle", "cat": "Household", "brand": "", "price": 15.0, "qty": 4, "desc": "Water purification bottle.", "img": ""}, {"id": 149, "name": "DE Food Grade", "cat": "Household", "brand": "Tienda Nectar", "price": 9.0, "qty": 2, "desc": "Diatomaceous earth, food grade.", "img": ""}, {"id": 61, "name": "Stoneware", "cat": "Household", "brand": "Arushka", "price": 27.0, "qty": 7, "desc": "Stoneware pieces.", "img": ""}, {"id": 67, "name": "Candle", "cat": "Household", "brand": "Wholenest", "price": 2.0, "qty": 4, "desc": "Beeswax candle.", "img": ""}, {"id": 68, "name": "Candleholder", "cat": "Household", "brand": "Wholenest", "price": 5.0, "qty": 2, "desc": "Wood candleholder.", "img": ""}, {"id": 85, "name": "Wine Rig", "cat": "Household", "brand": "", "price": 6.0, "qty": 2, "desc": "Wine-making equipment.", "img": ""}, {"id": 86, "name": "PP Water Beads", "cat": "Household", "brand": "Tienda Nectar", "price": 9.0, "qty": 1, "desc": "PP water beads.", "img": ""}, {"id": 98, "name": "Stressballs", "cat": "Household", "brand": "Tienda Nectar", "price": 2.0, "qty": 3, "desc": "Stress balls.", "img": ""}, {"id": 294, "name": "Paper Straws", "cat": "Household", "brand": "Tienda Nectar", "price": 2.5, "qty": 4, "desc": "Paper straws.", "img": ""}, {"id": 578, "name": "CBD Gummies", "cat": "Household", "brand": "", "price": 16.0, "qty": 9, "desc": "CBD gummies.", "img": ""}, {"id": 295, "name": "Gift Cards", "cat": "Gifts", "brand": "", "price": 6.0, "qty": 20, "desc": "Apothekenny gift cards. 6 for $30 or $6 each.", "img": ""}, {"id": 454, "name": "Aromatherapy Pen", "cat": "Gifts", "brand": "", "price": 7.5, "qty": 2, "desc": "Personal aromatherapy inhaler pen.", "img": ""}, {"id": 292, "name": "Alan Watts 4 CD Set", "cat": "Gifts", "brand": "Alan Watts", "price": 20.0, "qty": 1, "desc": "Alan Watts 4-CD audio set.", "img": ""}, {"id": 293, "name": "The Lost Watts Talk", "cat": "Gifts", "brand": "Alan Watts", "price": 10.0, "qty": 1, "desc": "The Lost Watts Talk, 2-CD set.", "img": ""}, {"id": 291, "name": "Blissful Connection Meditation", "cat": "Gifts", "brand": "Amankeda", "price": 1.0, "qty": 1, "desc": "Guided meditation CD.", "img": ""}, {"id": 290, "name": "Expats: A Musical Comedy", "cat": "Gifts", "brand": "Fishbon del Sol", "price": 9.0, "qty": 1, "desc": "Expats musical comedy CD.", "img": ""}, {"id": 299, "name": "EMF Shield (large)", "cat": "Gifts", "brand": "", "price": 3.75, "qty": 3, "desc": "EMF shielding sticker, large.", "img": ""}, {"id": 298, "name": "EMF Shield (small)", "cat": "Gifts", "brand": "", "price": 2.0, "qty": 3, "desc": "EMF shielding sticker, small.", "img": ""}, {"id": 300, "name": "Sage Bundle", "cat": "Gifts", "brand": "Api Loja", "price": 2.5, "qty": 1, "desc": "Sage bundle.", "img": ""}, {"id": 577, "name": "Andino Gourmet", "cat": "Gifts", "brand": "Andino Gourmet", "price": 13.0, "qty": 6, "desc": "Andino gourmet product, 250cc.", "img": ""}, {"id": 65, "name": "Hammock / Tarp / Net", "cat": "Gifts", "brand": "Crua Outdoors", "price": 119.0, "qty": 1, "desc": "Hammock with tarp and net. Full camping kit.", "img": ""}, {"id": 587, "name": "Cashew Butter", "cat": "Food", "brand": "Tienda Nectar", "price": 12.25, "qty": 50, "desc": "Cashew butter, 454g. High in healthy fats, minerals, and plant-based protein.", "img": "https://www.kudoskitchenbyrenee.com/wp-content/uploads/2025/04/Cashew-and-Honey-Nut-Butter-800-x-1200.jpg"}, {"id": 233, "name": "Cacao en Polvo (454g)", "cat": "Food", "brand": "Arawi", "price": 8.4, "qty": 2, "desc": "Cacao powder, 454g. Pure unsweetened cacao.", "img": ""}, {"id": 228, "name": "Harina Integral", "cat": "Food", "brand": "Schullo", "price": 4.75, "qty": 2, "desc": "Whole wheat flour (harina integral), 500g.", "img": ""}, {"id": 261, "name": "Quinoa", "cat": "Food", "brand": "Schullo", "price": 4, "qty": 4, "desc": "Organic quinoa, 300g. Complete plant protein.", "img": ""}, {"id": 231, "name": "Tostado Medio", "cat": "Food", "brand": "CafeOrg.DeHaba", "price": 5, "qty": 1, "desc": "Organic medium roast coffee, 450g.", "img": ""}, {"id": 337, "name": "5 Defenders Wellness Mix", "cat": "Personal Care", "brand": "Ancient Futures", "price": 15, "qty": 3, "desc": "5 Defenders wellness mix. Consignment item.", "img": ""}, {"id": 336, "name": "Natural Hand and Foot Mask", "cat": "Personal Care", "brand": "Nua", "price": 8, "qty": 4, "desc": "Natural hand and foot mask.", "img": ""}, {"id": 340, "name": "Cola de Pavo Puro", "cat": "Personal Care", "brand": "Intiwasi", "price": 30, "qty": 1, "desc": "Turkey tail mushroom powder (cola de pavo puro), 30g jar.", "img": ""}, {"id": 326, "name": "Solarium Protégete del Sol", "cat": "Personal Care", "brand": "Verdeyana", "price": 24, "qty": 1, "desc": "Natural sunscreen, 100ml.", "img": ""}, {"id": 461, "name": "Curcuma Soap", "cat": "Personal Care", "brand": "Green Harmony", "price": 3.75, "qty": 4, "desc": "Turmeric soap. Anti-inflammatory cleansing bar (small/travel size).", "img": ""}, {"id": 107, "name": "Super Fitinmac", "cat": "Supplements", "brand": "Labmac", "price": 12, "qty": 3, "desc": "Super Fitinmac, 30 tablets. Labmac formula.", "img": ""}, {"id": 13, "name": "Uña de Gato + Sangre de Drago + Regaliz", "cat": "Supplements", "brand": "Natural Factors", "price": 9, "qty": 3, "desc": "Cat's claw, dragon's blood, and licorice combination, 100 capsules.", "img": ""}, {"id": 133, "name": "Oleander", "cat": "Supplements", "brand": "Amazona", "price": 7, "qty": 5, "desc": "Oleander (Amazona), 100 capsules. For specialized external use only. Use with extreme caution.", "img": ""}, {"id": 106, "name": "Multivitamins", "cat": "Supplements", "brand": "Republica Natural", "price": 9, "qty": 2, "desc": "Multivitamins (Republica Natural), 30 capsules 600mg.", "img": ""}, {"id": 119, "name": "Vitamin C-500", "cat": "Supplements", "brand": "Amazona", "price": 14, "qty": 2, "desc": "Vitamin C 500mg, 100 tablets.", "img": ""}, {"id": 120, "name": "Aniracetam", "cat": "Supplements", "brand": "Absorb Health", "price": 30, "qty": 1, "desc": "Aniracetam 750mg, 100 capsules.", "img": ""}, {"id": 117, "name": "Reflux Rescue", "cat": "Supplements", "brand": "Planetary Herbals", "price": 40.25, "qty": 1, "desc": "Reflux Rescue by Planetary Herbals, 120 tablets.", "img": ""}, {"id": 50, "name": "Rioxan Plus", "cat": "Supplements", "brand": "Only Natural", "price": 6.5, "qty": 2, "desc": "Rioxan Plus — UTI & kidney Chinese herb formula, 20 capsules.", "img": ""}, {"id": 536, "name": "Clorofila", "cat": "Supplements", "brand": "Only Natural", "price": 6.5, "qty": 9, "desc": "Chlorophyll, 100 capsules. Daily detox and cleansing.", "img": "https://drive.google.com/thumbnail?id=1_vDP71lD3PpFJ8yWlohQDHZt6QyZ4bw1&sz=w400"}, {"id": 511, "name": "Magnesium Gluconate", "cat": "Supplements", "brand": "ALFA", "price": 12, "qty": 8, "desc": "Magnesium gluconate, 100 tablets 550mg. Muscle relaxation and sleep.", "img": ""}, {"id": 542, "name": "Vitamina D3", "cat": "Supplements", "brand": "ALFA", "price": 12, "qty": 7, "desc": "Vitamin D3 1000IU, 60 capsules. Bone and immune support.", "img": ""}, {"id": 477, "name": "Acidophilus (ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 8, "qty": 7, "desc": "Acidophilus probiotic, 60 capsules 300mg. Refrigerate.", "img": ""}, {"id": 521, "name": "Garlic Odorless", "cat": "Supplements", "brand": "ALFA", "price": 8, "qty": 7, "desc": "Odorless garlic 2000mg, 100 softgels. Cardiovascular support.", "img": ""}, {"id": 529, "name": "Ginseng & Ginkgo Biloba", "cat": "Supplements", "brand": "ALFA", "price": 6, "qty": 6, "desc": "Ginseng and ginkgo biloba, 90 tablets.", "img": "https://drive.google.com/thumbnail?id=16_jrQk8sqqW2jU16QOJ1SZ1KTgRc0nGg&sz=w400"}, {"id": 14, "name": "Cat's Claw (Cats Claw)", "cat": "Supplements", "brand": "Alfa", "price": 6.5, "qty": 6, "desc": "Cat's Claw (ALFA) 350mg, 60 capsules. Immune and joint support.", "img": ""}, {"id": 479, "name": "Vitamin E (ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 6.5, "qty": 6, "desc": "Vitamin E 1000mg, 50 softgels. Antioxidant. Refrigerate.", "img": ""}, {"id": 116, "name": "FOSCEBRIN KH3", "cat": "Supplements", "brand": "Onlynat S.A.", "price": 8, "qty": 6, "desc": "Foscebrin KH3, 30 capsules. Brain function and cognitive support.", "img": ""}, {"id": 565, "name": "Biotina (ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 8, "qty": 5, "desc": "Biotin 10,000mcg, 60 capsules. Hair, skin, and nails.", "img": "https://drive.google.com/thumbnail?id=1PXdEcuaM1kKBtWNaS-Hzu2OJQXL71trq&sz=w400"}, {"id": 500, "name": "Selenium (ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 6.5, "qty": 5, "desc": "Selenium 200mcg, 100 capsules. Thyroid and immune health.", "img": "https://drive.google.com/thumbnail?id=1dGcfq40B74aGJWR7DqaN_uATidylXdwa&sz=w400"}, {"id": 537, "name": "Vitamina C (1000mg ALFA)", "cat": "Supplements", "brand": "ALFA", "price": 5, "qty": 4, "desc": "Vitamin C 1000mg, 100 tablets.", "img": ""}, {"id": 527, "name": "Glucosamine + MSM + Collagen", "cat": "Supplements", "brand": "ALFA", "price": 11, "qty": 3, "desc": "Glucosamine, MSM, and collagen, 60 capsules.", "img": ""}];
+
+const CATS = ["All", ...Array.from(new Set(PRODUCTS.map(p=>p.cat))).sort()];
+let activeFilter = "All";
+let searchVal = "";
+
+function buildFilters() {
+  document.getElementById("filter-row").innerHTML = CATS.map(c =>
+    `<button class="filter-btn${c===activeFilter?" active":""}" onclick="setFilter('${c}')">${CAT_ICONS[c]||""} ${c}</button>`
+  ).join("");
+}
+
+function setFilter(cat) {
+  activeFilter = cat;
+  buildFilters();
+  renderProducts();
+}
+
+function filterProducts() {
+  searchVal = document.getElementById("search").value;
+  renderProducts();
+}
+
+function getFiltered() {
+  return PRODUCTS.filter(p => {
+    const matchCat = activeFilter==="All" || p.cat===activeFilter;
+    const q = searchVal.toLowerCase();
+    const matchSearch = !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.cat.toLowerCase().includes(q) ||
+      (p.brand||"").toLowerCase().includes(q) ||
+      p.desc.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+}
+
+function renderProducts() {
+  const list = getFiltered();
+  document.getElementById("results-bar").textContent =
+    list.length + " product" + (list.length!==1?"s":"") +
+    (activeFilter!=="All" ? " in " + activeFilter : "") +
+    (searchVal ? ' matching "' + searchVal + '"' : "");
+
+  const catalog = document.getElementById("catalog");
+  if (!list.length) {
+    catalog.innerHTML = '<div class="no-results"><p style="font-size:32px">🌿</p><p>No products found.<br>Try a different search or category.</p></div>';
+    return;
+  }
+
+  const sorted = [...list].sort((a,b) => {
+    if (a.cat < b.cat) return -1;
+    if (a.cat > b.cat) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  let html = "";
+  let lastCat = null;
+
+  sorted.forEach(p => {
+    if (activeFilter==="All" && p.cat!==lastCat) {
+      const catCount = sorted.filter(x=>x.cat===p.cat).length;
+      html += `<div class="section-header">
+        <h2>${CAT_ICONS[p.cat]||""} ${p.cat}</h2>
+        <span class="section-count">${catCount} item${catCount!==1?"s":""}</span>
+      </div>`;
+      lastCat = p.cat;
+    }
+
+    const price = p.price > 0 ? `$${p.price.toFixed(2)}` : "Ask for price";
+    const priceClass = p.price > 0 ? "product-price" : "product-price ask";
+    const badge = p.urgent
+      ? `<span class="badge badge-urgent">On sale now</span>`
+      : `<span class="badge badge-cat">${p.cat}</span>`;
+
+    const waText = encodeURIComponent(`Hi! I'd like to order: ${p.name}${p.price>0?" ($"+p.price.toFixed(2)+")":""}`);
+    const icon = CAT_ICONS[p.cat] || "🌿";
+
+    let thumb = p.img
+      ? `<div class="product-thumb"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=cat-icon>${icon}</span>'" /></div>`
+      : `<div class="product-thumb"><span class="cat-icon">${icon}</span></div>`;
+
+    html += `<div class="product-card">
+      <div class="card-top">
+        ${thumb}
+        <div class="product-meta">
+          <div class="product-name">${p.name}</div>
+          ${p.brand ? `<div class="product-brand">${p.brand}</div>` : ""}
+        </div>
+      </div>
+      <div class="product-desc">${p.desc}</div>
+      <div class="card-footer">
+        <span class="${priceClass}">${price}</span>
+        <a class="order-btn" href="https://wa.me/593988060335?text=${waText}" target="_blank">Order ↗</a>
+      </div>
+    </div>`;
+  });
+
+  catalog.innerHTML = html;
+}
+
+function submitForm() {
+  const name = document.getElementById("cf-name").value.trim();
+  const contact = document.getElementById("cf-contact").value.trim();
+  const order = document.getElementById("cf-order").value.trim();
+  const msg = document.getElementById("form-msg");
+  if (!name || !contact || !order) {
+    msg.style.color = "#FAC775";
+    msg.textContent = "Please fill in all three fields.";
+    return;
+  }
+  const text = encodeURIComponent(`Hi Apothekenny! My name is ${name} (${contact}) and I'd like to order:\n\n${order}`);
+  window.open(`https://wa.me/593988060335?text=${text}`, "_blank");
+  msg.style.color = "#9FE1CB";
+  msg.textContent = "Opening WhatsApp with your order...";
+  document.getElementById("cf-name").value = "";
+  document.getElementById("cf-contact").value = "";
+  document.getElementById("cf-order").value = "";
+}
+
+buildFilters();
+renderProducts();
+</script>
+</body>
+</html>
